@@ -1,7 +1,5 @@
 # Study database
 
-test23
-
 ## Objective
 To generate age-specific study databases for use as training data for CA-CODE (Child and Adolescent Causes of Death Estimation) model for 2000-2023.
 
