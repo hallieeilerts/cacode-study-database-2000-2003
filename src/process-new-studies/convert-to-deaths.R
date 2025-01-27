@@ -36,8 +36,9 @@ dat <- dat %>%
 # Most of the den_p value is 100%. Can we use that value as totdeaths_orig
 
 # Creating separate columns for cod number, proportion, mrcolumns, mortality ratio
-# Loop over 1 to 53
-for (j in 1:55) {
+# Loop over 1 to 55
+n_cod_col <- max(as.numeric(gsub("\\D", "", names(dat)[grepl("cod", names(dat))])), na.rm = T)
+for (j in 1:n_cod_col) {
   i <- sprintf("%02d", j)  # Format the loop counter as a two-digit number
   
   # Convert type`i'_comment to numeric
@@ -63,7 +64,7 @@ for (j in 1:55) {
 }
 
 # Reorder columns so that each cod_n, cod_p, cod_mr, and cod_mro follows its respective cause_of_death
-column_order <- unlist(lapply(1:55, function(j) {
+column_order <- unlist(lapply(1:n_cod_col, function(j) {
   cause_col <- paste0("cause_of_death", j)
   if (cause_col %in% colnames(dat)) {
     c(cause_col, paste0("cod_n", j), paste0("cod_p", j), paste0("cod_mr", j), paste0("cod_mro", j))

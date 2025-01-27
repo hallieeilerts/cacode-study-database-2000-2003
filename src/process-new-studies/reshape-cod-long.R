@@ -13,12 +13,14 @@ source("./src/set-inputs.R")
 dat <- read.csv(paste0("./gen/process-new-studies/temp/studies_convert-dths_", ageSexSuffix, ".csv", sep = ""))
 ################################################################################
 
+n_cod_col <- max(as.numeric(gsub("\\D", "", names(dat)[grepl("cod", names(dat))])), na.rm = T)
+
 # Column names
-cause_cols <- paste0("cause_of_death", 1:55)
-cod_n_cols <- paste0("cod_n", 1:55)
-cod_p_cols <- paste0("cod_p", 1:55)
-cod_mr_cols <- paste0("cod_mr", 1:55)
-cod_mro_cols <- paste0("cod_mro", 1:55)
+cause_cols <- paste0("cause_of_death", 1:n_cod_col)
+cod_n_cols <- paste0("cod_n", 1:n_cod_col)
+cod_p_cols <- paste0("cod_p", 1:n_cod_col)
+cod_mr_cols <- paste0("cod_mr", 1:n_cod_col)
+cod_mro_cols <- paste0("cod_mro", 1:n_cod_col)
 # Combine all sets of cause and associated columns into one list
 all_cols <- c(cause_cols, cod_n_cols, cod_p_cols, cod_mr_cols, cod_mro_cols)
 
