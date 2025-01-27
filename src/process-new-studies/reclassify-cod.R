@@ -135,7 +135,7 @@ unique(deaths$cause)[which(!unique(deaths$cause) %in% v_cod_reclass)]
 # !!!!! NOTE
 # Other and Undetermined are no longer columns
 # Other is a value in the cause column. Undt should not be in the cause column.
-# Neither should be any causes that were mapped to NA in cod-aggregation (e.g., natdis or colvio)
+# Neither should there be any causes that were mapped to NA in cod-aggregation (e.g., natdis or colvio)
 
 # Recode sex as single letter
 deaths$sexRecode <- as.character(deaths$sex)

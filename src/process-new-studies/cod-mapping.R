@@ -29,10 +29,13 @@ if(ageSexSuffix %in% "01to59m"){
                                   # 0-3 low-low, 0-60 low-high, 0-60 high-high (lb is always 0)
 }
 if(ageSexSuffix %in% "05to09y"){
-  dat <- subset(dat, (age_lb_m >= 61 & age_ub_m <=120) | 
-                  (age_lb_m < 61 & age_ub_m >= 61) | 
-                  (age_lb_m < 120 & age_ub_m >= 120))
+  dat <- subset(dat, (age_lb_m >= 61 & age_ub_m <=120) | # 61-62 low-low, 61-120 low-high, 119-120 high-low, 120-120 high-high
+                  (age_lb_m < 61 & age_ub_m >= 61) |     # 0-61 low-low, 0-inf low-high, 59-61 high-low, 60-inf high-high
+                  (age_lb_m < 120 & age_ub_m >= 120))    # 0-120 low-low, 0-inf low-high, 119-120 high-low, 119-inf high-high
 }
+# 60 = 5y
+# 120 = 10y
+
 if(ageSexSuffix %in% "10to14y"){
   dat <- subset(dat, (age_lb_m >= 121 & age_ub_m <= 180) | (age_lb_m < 121 & age_ub_m >= 121) | (age_lb_m < 180 & age_ub_m >= 180))
 }

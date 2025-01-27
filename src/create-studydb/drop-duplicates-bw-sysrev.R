@@ -42,15 +42,15 @@ nrow(df_batch1)
 
 # Manual review of data points with same country, totdeaths
 # df_batch2 <- dat %>%
-#   filter(!(strata_id %in% v_exclude_strataid)) %>%
-#   mutate(tempid = paste0(iso3, totdeaths)) %>%
-#   group_by(tempid) %>%
-#   mutate(N = n(),
-#          round_N = n_distinct(round)) %>%
-#   filter(N > 1 & round_N != 1) %>%
-#   arrange(tempid, iso3, totdeaths)
+#    filter(!(strata_id %in% v_exclude_strataid)) %>%
+#    mutate(tempid = paste0(iso3, totdeaths)) %>%
+#    group_by(tempid) %>%
+#    mutate(N = n(),
+#           round_N = n_distinct(round)) %>%
+#    filter(N > 1 & round_N != 1) %>%
+#    arrange(tempid, iso3, totdeaths)
 # nrow(df_batch2)
-#View(df_batch2[,c("tempid","round","id","strata_id","location_long","age_lb_m","age_ub_m","totdeaths",v_cod)])
+# View(df_batch2[,c("tempid","round","id","strata_id","location_long","age_lb_m","age_ub_m","totdeaths",v_cod)])
 
 # Manual review of data points with same country, year, age
 # df_batch3 <- dat %>%
@@ -77,7 +77,7 @@ nrow(df_batch1)
 #   filter(N > 1 & round_N != 1) %>%
 #   arrange(tempid, iso3, year_mid)
 # nrow(df_batch4)
-#View(df_batch4[,c("tempid","round","id","strata_id","location_long","age_lb_m","age_ub_m","totdeaths", v_cod)])
+# View(df_batch4[,c("tempid","round","id","strata_id","location_long","age_lb_m","age_ub_m","totdeaths", v_cod)])
 # df_batch5 <- dat %>%
 #   filter(!(strata_id %in% v_exclude_strataid)) %>%
 #   rowwise() %>%
@@ -90,7 +90,7 @@ nrow(df_batch1)
 #   filter(N > 1 & round_N != 1) %>%
 #   arrange(tempid, iso3, year_mid)
 # nrow(df_batch5)
-#View(df_batch5[,c("tempid","round","id","strata_id","location_long","age_lb_m","age_ub_m","totdeaths", v_cod)])
+# View(df_batch5[,c("tempid","round","id","strata_id","location_long","age_lb_m","age_ub_m","totdeaths", v_cod)])
 
 # Ad-hoc duplicate dropping
 if(ageSexSuffix == "00to28d"){

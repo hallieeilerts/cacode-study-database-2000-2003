@@ -29,7 +29,6 @@ for(i in 1:length(dat_filename)){
             to   = paste0("./data/prediction-database-india/",dat_filename[i]))
 }
 
-
 # Old study data
 fn_initEnvironment("study-data-old")
 dat_filename <- list.files(paste0(pathDataWarehouse, "/2000-2021/databases/study-database", sep = ""))

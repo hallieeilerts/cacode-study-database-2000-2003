@@ -175,7 +175,6 @@ if(ageSexSuffix %in% c("00to28d", "01to59m")){
                   round(dat$age_lb_m), round(dat$age_ub_m), substr(dat$sex,1,1), sep = '-')
   dat$id <- gsub("NA-NA", ageSexSuffix, dat$id) # If no age variables in ID, replace with ageSexSuffix
   
-  
 }
 
 # Check id is unique
@@ -187,7 +186,6 @@ if(!(nrow(dat) == length(unique(dat$id)))){
 if(!(nrow(dat) == length(unique(dat$strata_id)))){
   warning("Variable recoded as strata_id is not unique")
 }
-
 
 # Check that age_lb_m is always less than age_ub_m
 if(nrow(subset(dat, age_lb_m > age_ub_m))>0){
