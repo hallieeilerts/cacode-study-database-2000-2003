@@ -70,6 +70,19 @@ df_batch1 <- datWide %>%
 # If not, drop one record. 
 # Potential drop candidates include placebo/intervention strata, underlying/primary COD strata.
 
+# Manual review of data points with same country, year, age_lb_m, age_ub_m
+# Do not have two different VA algorithms.
+# df_batch5 <- datWide %>%
+#   filter(!(strata_id %in% v_exclude_strataid)) %>%
+#   filter(!(article_id %in% v_exclude_article)) %>%
+#   group_by(iso3, year_start, year_end, age_lb_m, age_ub_m) %>%
+#   mutate(N = n(),
+#          va_alg_N = n_distinct(va_alg)) %>%
+#   filter(N > 1 & va_alg_N == 1) %>%
+#   arrange(iso3, totdeaths)
+# View(df_batch5)
+# Identify if there are M, F, and T data points available and keep appropriate one depending on age/sex group.
+
 # Ad-hoc duplicate dropping
 if(ageSexSuffix == "00to28d"){
   # strata_id
@@ -109,18 +122,16 @@ if(ageSexSuffix == "01to59m"){
 if(ageSexSuffix == "05to09y"){
   # strata_id
   # batch1
-  v_exclude_strataid <- c("R202226081-04") # "KEN-2013-26081-R202226081-04-60-168-T") # Pure duplicate
-  v_exclude_strataid <- c(v_exclude_strataid, "R202224967-03") # "MDG-2014-24967-R202224967-03-60-108-T") # Pure duplicate
-  v_exclude_strataid <- c(v_exclude_strataid, "R2022346-03") # "UGA-2016-346-R2022346-03-60-168-T") # Pure duplicate
+  v_exclude_strataid <- c("R202226081-04") # R202226081-04 is a duplicate of R202210243-04
+  v_exclude_strataid <- c(v_exclude_strataid, "R202224967-03") # R202224967-03 is a duplicate of R2022111-03
+  v_exclude_strataid <- c(v_exclude_strataid, "R2022346-03") # R2022346-03 is a duplicate of R202210582-02
+  v_exclude_strataid <- c(v_exclude_strataid, "R202224909-04") # R202224909-04 is a duplicate of R202210342-04 and totdeaths is incorrect for one being excluded
+  v_exclude_strataid <- c(v_exclude_strataid, "R202224909-02") # R202224909-02 is duplicate of R202210342-02 and totdeaths is incorrect for one being excluded
   # batch2
-  # View(subset(datWide, strata_id %in% c("R202224909-04","R202210342-04")))
-  v_exclude_strataid <- c(v_exclude_strataid, "R202224909-04") # R202224909-04 is a duplicate of R202210342-04 (IND-2014-24909-89-60-168-F), and totdeaths is incorrect for one being excluded
-  # View(subset(datWide, strata_id %in% c("R202224909-02","R202210342-02")))
-  v_exclude_strataid <- c(v_exclude_strataid, "R202224909-02") # R202224909-02 is duplicate of R202210342-02 (IND-2014-10342-89-60-168-M), and totdeaths is incorrect for one being excluded
-  v_exclude_strataid <- c(v_exclude_strataid, "R202225680-04", "R202225680-05") # Dropping sex-specific data points, using sex-combined "R20228-03"
   # Don't exclude PNG 2019 R202210731-02 and R2022229-02. These appear to be two different surveillance sites
+  # batch5
+  v_exclude_strataid <- c(v_exclude_strataid, "R202225680-04", "R202225680-05") # Dropping sex-specific data points, using sex-combined "R20228-03"
   v_exclude_article <- c()
-  
 }
 if(ageSexSuffix == "10to14y"){
   # !!!! CHANGE TO STRATA ID
@@ -147,6 +158,15 @@ if(ageSexSuffix == "15to19yM"){
   v_exclude_article <- c()
 }
 
+# Create empty data frame for exclusions
+dat_exc <- datWide[0,]
+if(length(v_exclude_strataid) > 0 |  length(v_exclude_article) > 0){
+  dat_exc <- datWide %>%
+    filter(strata_id %in% v_exclude_strataid | 
+             article_id %in% v_exclude_article) %>%
+    mutate(exclude_reason = "Duplicate")
+}
+
 # Exclude duplicates
 dat <- dat %>%
   filter(!(strata_id %in% v_exclude_strataid)) %>%
@@ -160,3 +180,4 @@ dat <- dat[order(dat$id),]
 # Save output -------------------------------------------------------------
 
 write.csv(dat, paste0("./gen/process-new-studies/temp/studies_dup-dropped_",ageSexSuffix,".csv",sep =""), row.names = FALSE)
+write.csv(dat_exc, paste0("./gen/process-new-studies/audit/dat_exc0_",ageSexSuffix,".csv",sep =""), row.names = FALSE)
