@@ -13,6 +13,7 @@ source("./src/set-inputs.R")
 ## Final included studies from 2000-2023 systematic review
 dat_filename <- list.files("./gen/process-new-studies/output/")
 dat_filename <- dat_filename[grepl(ageSexSuffix, dat_filename)]
+dat_filename <- dat_filename[grepl("studies", dat_filename, ignore.case = TRUE)]
 dat_filename <- tail(sort(dat_filename),1) # Most recent
 dat <- read.csv(paste0("./gen/process-new-studies/output/", dat_filename, sep = ""))
 ## Excluded studies from 2000-2023 systematic review (does not include duplicates which were already dropped)
@@ -20,9 +21,6 @@ list_csv_files <- list.files("./gen/process-new-studies/audit/", pattern = "*.cs
 list_csv_files <- list_csv_files[grepl("dat_exc", list_csv_files, ignore.case =TRUE)]
 list_csv_files <- list_csv_files[grepl(ageSexSuffix, list_csv_files)]
 l_exc <- lapply(list_csv_files, function(x) read.csv(paste0("./gen/process-new-studies/audit/",x,sep="")))
-dat_exc <- do.call(rbind, l_exc)
-# dat_exc <- list_csv_files %>%
-#             map_df(~read.csv(paste0("./gen/process-new-studies/audit/",.,sep="")), progress = FALSE)
 ## Old model inputs
 if(ageSexSuffix %in% c("00to28d", "01to59m")){
 }
@@ -41,6 +39,12 @@ dat_filename <- dat_filename[grepl("codreclassification", dat_filename, ignore.c
 dat_filename <- dat_filename[grepl(ageSexSuffix, dat_filename)] 
 key <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
 ################################################################################
+
+# Excluded data frames
+# Only keep columns that are in included data
+l_exc <- lapply(l_exc, function(x) x[names(x) %in% c(names(dat), "exclude_reason")])
+l_exc <- l_exc[lapply(l_exc, nrow) > 0]
+dat_exc <- do.call(bind_rows, l_exc)
 
 # Vector of all CODs in correct order
 v_cod_reclass  <- unique(subset(key, !is.na(cod_reclass))$cod_reclass)
@@ -63,8 +67,11 @@ if(ageSexSuffix %in% c("00to28d", "01to59m")){
   all$n_old <- nrow(studies)
 }
 
-all$n_new <- ifelse(is.na(all$exclude_reason), 1, 0)
-all$perincrease <- sum(all$n_new)/all$n_old
+all$included <- ifelse(is.na(all$exclude_reason), 1, 0)
+all$excluded <- ifelse(!is.na(all$exclude_reason), 1, 0)
+all$n_new <- sum(all$included)
+all$n_exc <- sum(all$excluded)
+all$perincrease <- all$n_new/all$n_old
 
 all <- all[order(all$id),]
 
