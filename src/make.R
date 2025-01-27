@@ -63,7 +63,7 @@ source("./src/update-old-studies/set-idvars.R", local=new.env())
 if(ageSexSuffix %in% c("00to28d", "01to59m")){
   source("./src/update-old-studies/drop-duplicates-under5.R", local=new.env())
 }
-source("./src/update-old-studies/harmonize-cod.R", local=new.env()) 
+source("./src/update-old-studies/harmonize-cod.R", local=new.env())
 source("./src/update-old-studies/update-covar-names-scales.R", local=new.env())
 source("./src/update-old-studies/create-covar-replacement-key.R", local=new.env())
 source("./src/update-old-studies/update-covar.R", local=new.env())
