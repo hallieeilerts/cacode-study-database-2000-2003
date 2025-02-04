@@ -67,7 +67,7 @@ df_src <- dat %>%
   mutate(source_type = ifelse( is.na(source_type) & variable %in% key_covar$pred, "Prediction Database", source_type )) %>%
   mutate(source_type = ifelse( source_type != "Article" & 
                                  !grepl("national|jmp|igme|who", source, ignore.case = TRUE) & 
-                                 iso3 %in% "IND" &  variable %in% v_predInd_covar,
+                                 iso3 %in% "IND" &  variable %in% v_predInd_covar & !is.na(value),
                                "India Subnational Prediction Database", source_type )) %>%
   mutate(replace = ifelse(source_type %in% c("Prediction Database"), TRUE, FALSE))
 

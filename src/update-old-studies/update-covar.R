@@ -56,6 +56,8 @@ v_cod <- sort(unique(df_reclass$cod_reclass))
 dat <- dat %>% 
   mutate(tempid = 1:n()) 
 
+#dat %>% filter(id %in% "IND-1999-0401-138-0-12-T") %>% View
+
 # Merge with replacement key and separate variables that need to be replaced from those that dont
 df_replace <- merge(dat, key_replace, by = c("id","strata_id","variable"))
 df_keep <- subset(dat, !(tempid %in% df_replace$tempid))
@@ -74,6 +76,14 @@ df_replace$source <- paste("PredDB2023", df_replace$iso3, df_replace$year_mid, s
 # Recombine
 studyupd <- rbind(df_keep, df_replace)
 studyupd$tempid <- NULL
+
+# Check if any covariate values are missing
+if(nrow(subset(studyupd, is.na(value))) > 0){
+  warning("covariate values are missing")
+}
+if(nrow(subset(studyupd, is.na(source))) > 0){
+  warning("covariate sources are missing")
+}
 
 # Reshape data points wide
 studyupdWide <- studyupd %>%
