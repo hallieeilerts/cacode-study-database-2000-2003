@@ -21,4 +21,4 @@ dat$Malnutrition <- NULL
 
 # Save outputs ------------------------------------------------------------
 
-write.csv(dat, paste0("./gen/create-studydb/output/StudyDatabase2023-noMal_",ageSexSuffix,"_",format(Sys.Date(), format="%Y%m%d"),".csv"), row.names = FALSE)
+write.csv(dat, paste0("./gen/create-studydb/output/StudyDatabase2023_",ageSexSuffix,"-noMalnutrition_",format(Sys.Date(), format="%Y%m%d"),".csv"), row.names = FALSE)
