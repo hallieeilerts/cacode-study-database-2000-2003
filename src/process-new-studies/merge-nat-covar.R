@@ -58,8 +58,12 @@ df_all <- df_all[,c("strata_id","variable","value","source")]
 df_all <- df_all[order(df_all$strata_id, df_all$variable),]
 
 # Check if any covariate values are missing
-nrow(subset(df_all, is.na(value))) # 0 
-nrow(subset(df_all, is.na(source))) # 0 
+if(nrow(subset(df_all, is.na(value))) > 0){
+  warning("covariate values are missing")
+}
+if(nrow(subset(df_all, is.na(source))) > 0){
+  warning("covariate sources are missing")
+}
 
 # Reshape covariate values wide
 wideVal <- df_all %>%

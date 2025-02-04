@@ -38,8 +38,12 @@ key_dhs_reg <- read.csv(paste0("./data/classification-keys/", dat_filename, sep 
 studyinfo <- studies[,c("strata_id","iso3", "year_mid")]
 nrow(subset(studyinfo, is.na(iso3))) # 0
 
+# Create data frame with empty value for every covariate
+covarinfo <- data.frame(strata_id = rep(studies$strata_id, each = length(unique(key_dhs_var$variable))), variable = unique(key_dhs_var$variable))
+studyinfo <- merge(studyinfo, covarinfo, by = "strata_id")
+
 # Merge studies to key with study id/covar/DHS survey match
-df_studies <- merge(studyinfo, key_dhs_var[,c("strata_id","variable","dhs_match")], by = "strata_id", all.x = TRUE) # 
+df_studies <- merge(studyinfo, key_dhs_var[,c("strata_id","variable","dhs_match")], by = c("strata_id","variable"), all.x = TRUE) # 
 # Check if some countries never match to a dhs survey
 df_studies %>% 
   mutate(hasdhs = ifelse(!is.na(dhs_match),1,0)) %>%
@@ -47,7 +51,8 @@ df_studies %>%
   mutate(hasdhs = sum(hasdhs)) %>%
   filter(hasdhs == 0) %>%
   pull(iso3) %>% unique()
-# 0-1m: all match to a DHS survey
+# 0-28d: all match to a DHS survey
+# 1-59m: CHN and IRN
 
 # Merge studies to key with study id/DHS survey match/DHS region match
 df_studies <- merge(df_studies, key_dhs_reg[,c("strata_id","dhs_match","admin_level","region_name")], by = c("strata_id","dhs_match"), all.x = TRUE)
