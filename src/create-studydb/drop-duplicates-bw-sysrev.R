@@ -98,6 +98,9 @@ if(ageSexSuffix == "00to28d"){
 }
 if(ageSexSuffix == "01to59m"){
   v_exclude_strataid <- c()
+  # Duplicates manually identified by Astha
+  v_exclude_strataid <- c(v_exclude_strataid, "VASA1", "VASA2", "VASA3", "VASA4") 
+  # duplicates of "R202222679-11", "R202222679-07", "R202222679-03", "R202223055-03"
 }
 if(ageSexSuffix == "05to09y"){
   v_exclude_strataid <- c()
@@ -115,7 +118,6 @@ if(ageSexSuffix == "15to19yM"){
 # Exclude duplicates
 dat <- dat %>%
   filter(!(strata_id %in% v_exclude_strataid))
-
 
 # Save outputs ------------------------------------------------------------
 

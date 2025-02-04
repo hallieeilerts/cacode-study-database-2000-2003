@@ -9,8 +9,7 @@ require(tidyverse)
 #' Inputs
 source("./src/set-inputs.R")
 ## Study CODs with cleaned columns
-#dat <- read.csv(paste0("./gen/process-new-studies/temp/studies_wide.csv", sep = ""))
-dat <- read.csv(paste0("./gen/process-new-studies/temp/studies_wide_", ageSexSuffix, ".csv", sep = ""))
+dat <- read.csv(paste0("./gen/combine-studies-adhoc/temp/studies_wide.csv", sep = ""))
 ################################################################################
 
 # !!!!!
@@ -117,6 +116,6 @@ dat <- dat %>%
 
 # Save output -------------------------------------------------------------
 
-write.csv(dat, paste0("./gen/process-new-studies/temp/studies_convert-dths_",ageSexSuffix,".csv",sep =""), row.names = FALSE)
+write.csv(dat, paste0("./gen/combine-studies-adhoc/temp/studies_convert-dths.csv",sep =""), row.names = FALSE)
 
 

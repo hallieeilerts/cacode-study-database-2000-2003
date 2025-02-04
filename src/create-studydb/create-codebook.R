@@ -12,6 +12,7 @@ dat_filename <- list.files("./gen/create-studydb/output")
 dat_filename <- dat_filename[grepl("studydatabase2023", dat_filename, ignore.case = TRUE)]
 dat_filename <- dat_filename[!grepl("codebook", dat_filename, ignore.case = TRUE)] 
 dat_filename <- dat_filename[grepl(ageSexSuffix, dat_filename)] 
+dat_filename <- dat_filename[!(grepl("noMal", dat_filename, ignore.case = TRUE))] 
 dat_filename <- tail(sort(dat_filename),1) # Most recent
 dat <- read.csv(paste0("./gen/create-studydb/output/", dat_filename, sep = ""))
 ## Key with cod reclassification
@@ -82,6 +83,9 @@ dat$scale[dat$variable == "reterm"] <- "string"
 
 dat$definition[dat$variable == "va_alg"] <- "Verbal autopsy algorithm used in the study."
 dat$scale[dat$variable == "va_alg"] <- "string"
+
+dat$definition[dat$variable == "va_alg_src"] <- "Source of verbal autopsy algorithm information, whether from the study itself or assumed."
+dat$scale[dat$variable == "va_alg_src"] <- "string"
 
 dat$definition[dat$variable == "va_mult_ind"] <- "Indicator for whether the study data point is reported multiple times with different VA algorithms."
 dat$scale[dat$variable == "va_mult_ind"] <- "binary"

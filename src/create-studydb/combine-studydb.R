@@ -5,6 +5,8 @@
 #' Clear environment
 rm(list = ls())
 #' Libraries
+library(tidyr)
+library(dplyr)
 #' Inputs
 source("./src/set-inputs.R")
 ## New study database
@@ -40,6 +42,8 @@ if(!(nrow(dat) == length(unique(dat$id)))){
 if(!(nrow(dat) == length(unique(dat$strata_id)))){
   warning("Variable recoded as strata_id is not unique")
 }
+
+#table(dat$age_lb_m, dat$age_ub_m)
 
 # Save outputs ------------------------------------------------------------
 

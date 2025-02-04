@@ -79,12 +79,23 @@ if(ageSexSuffix == "00to28d"){
   v_exclude_strataid <- c()
 }
 if(ageSexSuffix == "01to59m"){
-  v_exclude_strataid <- c("A4101")
-  v_exclude_strataid <- c(v_exclude_strataid, "ID011")
-  v_exclude_strataid <- c(v_exclude_strataid, "R2015-DHS13")
+  v_exclude_strataid <- c("A4101") # duplicate of R2013-6186-18
+  v_exclude_strataid <- c(v_exclude_strataid, "ID011") # duplicate of R20176002301
+  v_exclude_strataid <- c(v_exclude_strataid, "R2015-DHS13") # duplicate of R2013-DHS08
+  # Duplicates manually identified by Astha
+  v_exclude_strataid <- c(v_exclude_strataid, "2803") # duplicate of 4001
+  v_exclude_strataid <- c(v_exclude_strataid, "R201770004PAKVASA", "R201770005COMSA1") # Duplicates of new ad-hoc data
+    # View(subset(dat, strata_id %in% v_exclude_strataid))
+  # View(subset(dat, iso3 == "AFG" & year_mid == 2007))
+  # View(subset(dat, iso3 == "AFG"))
+  # View(subset(dat, iso3 == "IDN" & year_mid == 2001))
+  # View(subset(dat, iso3 == "IND" & year_mid == 2005))
+  # View(subset(dat, strata_id %in% c("A4101","R2013-6186-18")))
+  
 }
 
 dat <- subset(dat, !(strata_id %in% v_exclude_strataid))
+
 
 # Save output -------------------------------------------------------------
 

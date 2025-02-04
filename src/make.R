@@ -9,17 +9,20 @@ rm(list = ls())
 source("./src/set-inputs.R")
 source("./src/pull-data.R", local = new.env())
 
-# Clean studies from 2000-2023 systematic review --------------------------
+# Combine new studies and ad-hoc data -------------------------------------
 
-source("./src/process-new-studies/clean-distiller-studychar.R", local = new.env())
-source("./src/process-new-studies/clean-distiller-studycod.R", local = new.env())
-source("./src/process-new-studies/clean-study-locations.R", local = new.env())
+source("./src/combine-studies-adhoc/clean-distiller-studychar.R", local = new.env())
+source("./src/combine-studies-adhoc/clean-distiller-studycod.R", local = new.env())
+source("./src/combine-studies-adhoc/clean-study-locations.R", local = new.env())
+source("./src/combine-studies-adhoc/combine-study-info.R", local = new.env())
+source("./src/combine-studies-adhoc/convert-to-deaths.R", local = new.env())
+source("./src/combine-studies-adhoc/add-adhoc.R", local = new.env())
+source("./src/combine-studies-adhoc/set-idvars.R", local = new.env())
 
-# /begin age specific
-source("./src/process-new-studies/combine-inputs-set-idvars.R", local = new.env()) # !! non-HMM are dropped from 5-19y. do for under-5?
-source("./src/process-new-studies/convert-to-deaths.R", local = new.env())
+# Clean new data points ---------------------------------------------------
+
 source("./src/process-new-studies/reshape-cod-long.R", local = new.env())
-source("./src/process-new-studies/cod-mapping.R", local = new.env())
+source("./src/process-new-studies/cod-mapping.R", local = new.env())  # !! non-HMM are dropped from 5-19y. do for under-5?
 source("./src/process-new-studies/drop-duplicates.R", local = new.env())
 source("./src/process-new-studies/add-multiple-va-id.R", local = new.env())
 source("./src/process-new-studies/cod-aggregation.R", local = new.env())
@@ -30,9 +33,7 @@ source("./src/process-new-studies/exclude-by-size.R", local = new.env()) #
 source("./src/process-new-studies/reclassify-cod.R", local = new.env())
 source("./src/process-new-studies/merge-subnat-covar.R", local=new.env())
 source("./src/process-new-studies/merge-nat-covar.R", local=new.env())
-
-# for counting number of new datapoints compared to old
-# source("./src/process-new-studies/audit-studies.R", local = new.env()) 
+source("./src/process-new-studies/audit-studies.R", local = new.env()) 
 
 # Recover 2000-2019 study databases for 5-19y age groups ------------------
 
@@ -55,10 +56,10 @@ if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){
 # Update old studies (national covariate values, COD names) ---------------
 
 source("./src/update-old-studies/create-covar-key.R", local=new.env())
-# for plotting old and new covariates against each other to ensure that old covariate values have been adjusted appropriately (to match new names and scales)
 #source("./src/update-old-studies/audit-covar.R", local=new.env())
-
-# /begin age specific
+if(ageSexSuffix %in% c("01to59m")){ # Will also add these for neonates soon**
+  source("./src/update-old-studies/add-new-extracted-vars.R", local=new.env())
+}
 source("./src/update-old-studies/set-idvars.R", local=new.env())
 if(ageSexSuffix %in% c("00to28d", "01to59m")){
   source("./src/update-old-studies/drop-duplicates-under5.R", local=new.env())
@@ -79,6 +80,9 @@ if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){
 # Combining the old and new studies
 source("./src/create-studydb/combine-studydb.R")
 source("./src/create-studydb/drop-duplicates-bw-sysrev.R")
+if(ageSexSuffix %in% c("01to59m")){
+  source("./src/create-studydb/drop-malnutrition.R", local=new.env())
+}
 source("./src/create-studydb/create-codebook.R")
 if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){ 
   source("./src/create-studydb/combine-modinput-deaths.R")

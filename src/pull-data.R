@@ -14,7 +14,7 @@ source("./src/fn_initEnvironmentData.R")
 
 
 # Prediction database
-fn_initEnvironment("prediction-database")
+fn_initEnvironmentData("prediction-database")
 dat_filename <- list.files(paste0(pathDataWarehouse, "/2000-2023/databases/prediction-database", sep = ""))
 for(i in 1:length(dat_filename)){
   file.copy(from = paste0(pathDataWarehouse, "/2000-2023/databases/prediction-database/",dat_filename[i], sep = ""),
@@ -22,7 +22,7 @@ for(i in 1:length(dat_filename)){
 }
 
 # India subnational prediction database
-fn_initEnvironment("prediction-database-india")
+fn_initEnvironmentData("prediction-database-india")
 dat_filename <- list.files(paste0(pathDataWarehouse, "/2000-2021/databases/prediction-database-india", sep = ""))
 for(i in 1:length(dat_filename)){
   file.copy(from = paste0(pathDataWarehouse, "/2000-2023/databases/prediction-database-india/",dat_filename[i], sep = ""),
@@ -30,11 +30,19 @@ for(i in 1:length(dat_filename)){
 }
 
 # Old study data
-fn_initEnvironment("study-data-old")
+fn_initEnvironmentData("study-data-old")
 dat_filename <- list.files(paste0(pathDataWarehouse, "/2000-2021/databases/study-database", sep = ""))
 for(i in 1:length(dat_filename)){
   file.copy(from = paste0(pathDataWarehouse, "/2000-2021/databases/study-database/",dat_filename[i], sep = ""),
             to   = paste0("./data/study-data-old/",dat_filename[i]))
+}
+
+# Old study data with new variables extracted (VA alogirthms, age bounds)
+fn_initEnvironmentData("study-data-old-augmented")
+dat_filename <- list.files(paste0(pathDataWarehouse, "/2000-2023/databases/study-data-old-augmented", sep = ""))
+for(i in 1:length(dat_filename)){
+  file.copy(from = paste0(pathDataWarehouse, "/2000-2023/databases/study-data-old-augmented/",dat_filename[i], sep = ""),
+            to   = paste0("./data/study-data-old-augmented/",dat_filename[i]))
 }
 
 # Old model inputs
@@ -52,6 +60,14 @@ dat_filename <- dat_filename[grepl("long", dat_filename, ignore.case = TRUE)]
 for(i in 1:length(dat_filename)){
   file.copy(from = paste0(pathDataWarehouse, "/2000-2023/data/study-data/",dat_filename[i], sep = ""),
             to   = paste0("./data/study-data/",dat_filename[i]))
+}
+
+# Ad hoc data
+fn_initEnvironmentData("ad-hoc")
+dat_filename <- list.files(paste0(pathDataWarehouse, "/2000-2023/databases/ad-hoc", sep = ""))
+for(i in 1:length(dat_filename)){
+  file.copy(from = paste0(pathDataWarehouse, "/2000-2023/databases/ad-hoc/",dat_filename[i], sep = ""),
+            to   = paste0("./data/ad-hoc/",dat_filename[i]))
 }
 
 # Single causes database

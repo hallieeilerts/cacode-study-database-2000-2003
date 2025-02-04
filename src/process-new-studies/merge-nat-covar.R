@@ -46,7 +46,7 @@ df_miss <- merge(df_miss, df_pred, by.x = c("iso3","year_mid","variable"), by.y 
 df_miss$value <- df_miss$value_main
 df_miss$value_main <- NULL
 # Make source column
-df_miss$source <- paste("PredDB", df_miss$iso3, df_miss$year_mid, sep = "_")
+df_miss$source <- paste("PredDB2023", df_miss$iso3, df_miss$year_mid, sep = "_")
 
 # Recombine study covariates
 df_all <- rbind(df_miss, df_match)

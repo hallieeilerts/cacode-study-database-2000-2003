@@ -24,9 +24,8 @@ dat <- dat %>%
   rename(ref_id = Refid,
          location_short = `study loc`, 
   ) %>%
-  mutate(nationalrep = ifelse(nationalrep == "National", 1, 0)) %>%
   select(c(strata_id, ref_id, location_short, nationalrep))
 
 # Save output -------------------------------------------------------------
 
-write.csv(dat, paste0("./gen/process-new-studies/temp/study-loc_clean-col.csv",sep =""), row.names = FALSE)
+write.csv(dat, paste0("./gen/combine-studies-adhoc/temp/study-loc_clean-col.csv",sep =""), row.names = FALSE)

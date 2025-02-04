@@ -20,7 +20,7 @@ if(ageSexSuffix %in% c("00to28d")){
 if(ageSexSuffix %in% c("01to59m")){
   dat_filename <- list.files("./data/study-data-old")
   dat_filename <- dat_filename[grepl("combined", dat_filename)]
-  dat <- read.dta13(paste0("./data/study-data-old/", dat_filename, sep = ""), nonint.factors = T)
+  dat <- read.csv(paste0("./gen/update-old-studies/temp/studies_add-extracted-vars_", ageSexSuffix, ".csv"))
 }
 if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){
   dat <- read.csv(paste0("./gen/recover-studies2019-5to19y/output/Studies2019_", ageSexSuffix, ".csv", sep = ""))
@@ -95,12 +95,6 @@ if(ageSexSuffix %in% c("01to59m")){
   dat$location_short[dat$study_id == "R20176001208"] <- "Upper River Division, Gambia"
   dat$location_short[dat$study_id == "R20176001256"] <- "Upper River Division, Gambia"
   
-  # Manual correct of age_lb_m and age_ub_m (which were 2, 1)
-  # doi: https://doi.org/10.1136/bmj.301.6743.103 
-  # V Fauveau, B Wojtyniak, J Chakraborty, A M Sarder, A Briend
-  # British Medical Journal 1990; 301 
-  dat$age_lb_m[dat$study_id == "R20176002102"] <- 6
-  dat$age_ub_m[dat$study_id == "R20176002102"] <- 35
 
   dat <- dat %>%
     mutate(recnr = 1:n(),
@@ -111,11 +105,33 @@ if(ageSexSuffix %in% c("01to59m")){
     rename(article_id = study_id,
            location_long = study_location,
            countryname = country,
-           strata_other1 = other_strata_1
+           strata_other1 = other_strata_1,
+           va_alg = VA.algorithm
     )   %>%
     select(-c(whoregion, age_lb_spec, age_ub_spec,
               pdia, pinj, pmal, pneo, poth, ppne, pcon, pmen, ptot,
               new_R, comment, BN))
+  
+  # Recode long character strings at the end of strata_id (primarily affects India MDS data points)
+  #View(dat[,c("recnr", "ref_id", "strata_id", "location_long", "location_short", "iso3")])
+  #View(dat[grepl("7000|R2013",dat$strata_id) & dat$iso3 == "IND",c("recnr", "ref_id", "strata_id", "location_long", "location_short")])
+  #View(dat[grepl("7000",dat$strata_id) & dat$iso3 == "IND",c("recnr", "ref_id", "strata_id", "location_long", "location_short")])
+  # For those with 7000 in strata_id
+  datINDsub <- dat[grepl("7000|R2013",dat$strata_id) & dat$iso3 == "IND",]
+  datINDsub$strata_id <- trimws(datINDsub$strata_id)
+  datINDsub$strata_id <- sub("[A-Za-z]+$", "", datINDsub$strata_id)
+  datINDsub$strata_id <- sub("-$", "", datINDsub$strata_id)
+  datINDsub$strata_id <- trimws(datINDsub$strata_id)
+  datINDsub$strata_id <- sub("[A-Za-z]+$", "", datINDsub$strata_id)
+  datINDsub$strata_id <- sub("-$", "", datINDsub$strata_id)
+  datINDsub$strata_id <- trimws(datINDsub$strata_id)
+  datINDsub$strata_id <- sub("[A-Za-z]+$", "", datINDsub$strata_id)
+  datINDsub$strata_id <- trimws(datINDsub$strata_id)
+  datINDsub$strata_id <- sub("[A-Za-z]+$", "", datINDsub$strata_id)
+  datINDsub$strata_id <- paste0(datINDsub$strata_id, "-", 1:nrow(datINDsub))
+  dat <- rbind(subset(dat, !(ref_id %in% datINDsub$ref_id)), datINDsub)
+  # Check that strata_id is still unique
+  nrow(dat) == length(unique(dat$strata_id))
   
 }
 
@@ -151,6 +167,20 @@ if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF", "15to19yM")){
     ) %>%
     select(-c(location_char_n, location_char_capwords, nation_rep, RecNr, strata_ur, comment,new_R,
               VR,  wbinc15, wbreg13, whocode, whoreg6, age_lb, age_ub, idAux)) 
+}
+
+# Harmonize VA algorithms (if present)
+if("va_alg" %in% names(dat)){
+  dat$va_alg[grepl("Physician", dat$va_alg, ignore.case = TRUE)] <- "PCVA"
+  dat$va_alg[grepl("Other", dat$va_alg, ignore.case = TRUE)] <- "Other"
+  dat$va_alg[grepl("inter", dat$va_alg, ignore.case = TRUE)] <- "InterVA"
+  dat$va_alg[grepl("insilico", dat$va_alg, ignore.case = TRUE)] <- "InSilico"
+  dat$va_alg[grepl("method not reported|cannot", dat$va_alg, ignore.case = TRUE)] <- "Not reported"
+  dat$va_alg[grepl("va not done|medical records|desath certificates", dat$va_alg, ignore.case = TRUE)] <- "Death certificates or medical records"
+  dat$va_alg[is.na(dat$va_alg)] <- "Not reported"
+  
+  # Source of VA algorithm information (VA algorithm status)
+  # Should be "study" or "assumed"
 }
 
 ## Ensure presence of all idvars

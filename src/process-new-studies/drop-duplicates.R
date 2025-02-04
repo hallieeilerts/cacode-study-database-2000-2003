@@ -24,12 +24,14 @@ datWide <- dat %>%
 
 # Manual review of data points with same country, year, sex, and total deaths
 # Do not have two different VA algorithms.
+# Are not an ad-hoc data point. We compiled ad-hoc data and should not have any duplicates.
 # Identify duplicates to drop and add to v_exclude_strataid or v_exclude_article
 df_batch1 <- datWide %>%
   group_by(iso3, year_start, year_end, sex, totdeaths) %>%
   mutate(N = n(),
          va_alg_N = n_distinct(va_alg)) %>%
-  filter(N > 1 & va_alg_N == 1) %>%
+  mutate(adhoc = grepl("adhoc",article_id,ignore.case = TRUE)) %>%
+  filter(N > 1 & va_alg_N == 1 & adhoc == FALSE) %>%
   arrange(iso3, totdeaths)
 # View(df_batch1)
 # df_batch2 <- datWide %>%
@@ -38,12 +40,13 @@ df_batch1 <- datWide %>%
 #   group_by(iso3, year_start, year_end, sex, totdeaths) %>%
 #   mutate(N = n(),
 #          va_alg_N = n_distinct(va_alg)) %>%
-#   filter(N > 1 & va_alg_N == 1) %>%
+#   mutate(adhoc = grepl("adhoc",article_id,ignore.case = TRUE)) %>%
+#   filter(N > 1 & va_alg_N == 1 & adhoc == FALSE) %>%
 #   arrange(iso3, totdeaths)
 # View(df_batch2)
 # nrow(df_batch2) # Should be zero rows once all duplicates dealt with, unless otherwise noted in exclusions below.
 
-# Manual review of data points with same country, year, sex, and total deaths
+# # Manual review of data points with same country, year, sex, and total deaths
 # df_batch3 <- datWide %>%
 #    filter(!(strata_id %in% v_exclude_strataid)) %>%
 #     filter(!(article_id %in% v_exclude_article)) %>%
@@ -51,6 +54,8 @@ df_batch1 <- datWide %>%
 #     mutate(N = n(),
 #            va_alg_N = n_distinct(va_alg)) %>%
 #     filter(N > 1) %>%
+#     mutate(adhoc = grepl("adhoc",article_id,ignore.case = TRUE)) %>%
+#     filter(N > 1 & adhoc == FALSE) %>%
 #     arrange(iso3, totdeaths)
 # View(df_batch3) # All of these duplicates should be multiple VA algorithms applied to same study data (va_alg_N should be 2)
 # If not, drop one record. 
@@ -64,7 +69,8 @@ df_batch1 <- datWide %>%
 #   group_by(iso3, year_start, year_end, sex, age_lb_m, age_ub_m) %>%
 #   mutate(N = n(),
 #          va_alg_N = n_distinct(va_alg)) %>%
-#   filter(N > 1 & va_alg_N == 1) %>%
+#   mutate(adhoc = grepl("adhoc",article_id,ignore.case = TRUE)) %>%
+#   filter(N > 1 & va_alg_N == 1 & adhoc == FALSE) %>%
 #   arrange(iso3, totdeaths)
 # View(df_batch4) # Scan strata_other1 to ensure these are for different locations
 # If not, drop one record. 
@@ -78,7 +84,8 @@ df_batch1 <- datWide %>%
 #   group_by(iso3, year_start, year_end, age_lb_m, age_ub_m) %>%
 #   mutate(N = n(),
 #          va_alg_N = n_distinct(va_alg)) %>%
-#   filter(N > 1 & va_alg_N == 1) %>%
+#   mutate(adhoc = grepl("adhoc",article_id,ignore.case = TRUE)) %>%
+#   filter(N > 1 & va_alg_N == 1 & adhoc == FALSE) %>%
 #   arrange(iso3, totdeaths)
 # View(df_batch5)
 # Identify if there are M, F, and T data points available and keep appropriate one depending on age/sex group.

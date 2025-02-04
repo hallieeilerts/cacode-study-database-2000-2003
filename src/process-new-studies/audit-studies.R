@@ -43,6 +43,7 @@ key <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
 # Excluded data frames
 # Only keep columns that are in included data
 l_exc <- lapply(l_exc, function(x) x[names(x) %in% c(names(dat), "exclude_reason")])
+l_exc <- lapply(l_exc, function(x){ x$ref_id <- as.character(x$ref_id); return(x)})
 l_exc <- l_exc[lapply(l_exc, nrow) > 0]
 dat_exc <- do.call(bind_rows, l_exc)
 

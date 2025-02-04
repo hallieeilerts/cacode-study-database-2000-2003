@@ -8,8 +8,8 @@ rm(list = ls())
 
 ## Choose age/sex group
 #ageSexSuffix <- "00to28d"
-#ageSexSuffix <- "01to59m"
-ageSexSuffix <- "05to09y"
+ageSexSuffix <- "01to59m"
+#ageSexSuffix <- "05to09y"
 #ageSexSuffix <- "10to14y"
 #ageSexSuffix <- "15to19yF"
 #ageSexSuffix <- "15to19yM"
@@ -29,7 +29,7 @@ idVars <- c("recnr", "id", "ref_id", "article_id",
             "strata_id", "strata_other1",
             "location_long", "location_short", "location_fac",
             "nationalrep", "reterm", 
-            "va_alg", "va_mult_ind", "va_mult_id", "va_mult_n",
+            "va_alg", "va_alg_src", "va_mult_ind", "va_mult_id", "va_mult_n",
             "iso3", "countryname", "sex", "age_lb_m", "age_ub_m",
             "year_start", "year_end", "year_mid")
 

@@ -40,4 +40,4 @@ dat <- dat[,c("ref_id", "article_id", "iso3", "countryname", "location_long", "v
 
 # Save output -------------------------------------------------------------
 
-write.csv(dat, paste0("./gen/process-new-studies/temp/study-char_clean-col.csv",sep =""), row.names = FALSE)
+write.csv(dat, paste0("./gen/combine-studies-adhoc/temp/study-char_clean-col.csv",sep =""), row.names = FALSE)

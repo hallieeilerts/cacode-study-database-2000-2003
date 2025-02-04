@@ -1,6 +1,6 @@
 ################################################################################
-#' @description Create a match key for covariate names and scales between master 2000-2020 study db, 2021 India pred db, and 2000-2023 pred db
-#' @return Key with covariate names, scales in all databases
+#' @description Plotting old and new covariates against each other to ensure that old covariate values have been adjusted appropriately (to match new names and scales)
+#' @return Plot document with one page per covariate and comparisons of old and new series for selected countries
 ################################################################################
 #' Clear environment
 rm(list = ls())

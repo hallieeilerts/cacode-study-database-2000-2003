@@ -9,8 +9,11 @@ require(tidyverse)
 #' Inputs
 source("./src/set-inputs.R")
 ## Study CODs with wide columns for cod number, proportion, rate
-#dat <- read.csv(paste0("./gen/process-new-studies/temp/studies_convert-dths.csv", sep = ""))
-dat <- read.csv(paste0("./gen/process-new-studies/temp/studies_convert-dths_", ageSexSuffix, ".csv", sep = ""))
+dat <- read.csv(paste0("./gen/combine-studies-adhoc/output/StudiesAdHoc2023.csv", sep = ""))
+## Key with model classification for hmm/lmm countries
+dat_filename <- list.files("./data/classification-keys")
+dat_filename <- dat_filename[grepl("modelclass", dat_filename, ignore.case = TRUE)]
+key <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
 ################################################################################
 
 n_cod_col <- max(as.numeric(gsub("\\D", "", names(dat)[grepl("cod", names(dat))])), na.rm = T)
@@ -41,6 +44,11 @@ datLong <- datLong %>%
 
 # Remove data points that don't have deaths
 datLong <- subset(datLong, !is.na(cod_n))
+
+# Delete unnecessary columns
+datLong <- datLong %>%
+  select(-c(cause_number, cod_p, cod_mr, cod_mro))%>%
+  mutate(cod_n = as.numeric(cod_n))
 
 # Save output -------------------------------------------------------------
 
