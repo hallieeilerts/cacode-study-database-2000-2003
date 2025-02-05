@@ -25,6 +25,8 @@ if(ageSexSuffix %in% c("05to09y", "10to14y", "15to19yF", "15to19yM")){
   nrow(dat) # 252
 }
 
+length(unique(dat$article_id)[grepl("adhoc", unique(dat$article_id), ignore.case = TRUE)]) # 230
+
 # Subset data points applicable to age group being processed
 if(ageSexSuffix %in% "00to28d"){
   dat <- subset(dat, age_ub_m <= 2) # 0-1 low-low, 0-2 low-high, 1-2 high-high
@@ -56,6 +58,10 @@ if(ageSexSuffix %in% c("15to19yF", "15to19yM")){
                   (age_lb_m < 181 & age_ub_m >= 181) | 
                   (age_lb_m < 228 & age_ub_m >= 228))
 }
+
+# length(unique(dat$article_id)[grepl("adhoc", unique(dat$article_id), ignore.case = TRUE)]) # 54 adhoc studies in 1-59m
+# sort(sub("adHoc2022","",unique(dat$article_id)[grepl("adhoc", unique(dat$article_id), ignore.case = TRUE)]))
+
 
 # View unique age groups
 dat %>%

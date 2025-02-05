@@ -41,9 +41,13 @@ datLong <- datLong %>%
   mutate(cause_of_death = tolower(cause_of_death)) %>%
   arrange(cause_of_death)
 
+# Number of ad hoc data points
+# length(unique(datLong$article_id)[grepl("adhoc", unique(datLong$article_id), ignore.case = TRUE)]) # 252
 
 # Remove data points that don't have deaths
 datLong <- subset(datLong, !is.na(cod_n))
+
+# length(unique(datLong$article_id)[grepl("adhoc", unique(datLong$article_id), ignore.case = TRUE)]) # 252
 
 # Delete unnecessary columns
 datLong <- datLong %>%
