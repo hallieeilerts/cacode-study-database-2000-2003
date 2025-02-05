@@ -56,13 +56,14 @@ if(ageSexSuffix %in% c("01to59m")){
   dat$nationalrep[is.na(dat$nationalrep)] <- 0
   dat$reterm <- ifelse(dat$nationalrep == 1, dat$iso3, paste(dat$iso3, ".", dat$study_id))
   
+  # Cleaning study location variable
   dat$location_char <- dat$study_location
   dat$location_short <- dat$location_char
   dat$location_char_n <- lengths(gregexpr("\\W+", dat$location_char))
   dat$location_char_capwords <- unlist(lapply(str_extract_all(dat$location_char, "\\b[A-Z]\\w+"), function(x) x[1]))
   dat$location_short[dat$location_char_n > 4 & !is.na(dat$location_char_capwords)] <- dat$location_char_capwords[dat$location_char_n > 4 & !is.na(dat$location_char_capwords)]
+  # Manual recodes when rule above didn't work well
   #View(dat[,c("study_id","study_location","location_char_n","location_char_capwords","location_short")])
-
   dat$location_short[dat$study_id == "2803"] <- "Upper River Division, Gambia"
   dat$location_short[dat$study_id == "4001"] <- "Upper River Division, Gambia"
   dat$location_short[dat$study_id == "GM011_10"] <- "Farafenni HDSS"
@@ -114,9 +115,8 @@ if(ageSexSuffix %in% c("01to59m")){
   
   # Recode long character strings at the end of strata_id (primarily affects India MDS data points)
   #View(dat[,c("recnr", "ref_id", "strata_id", "location_long", "location_short", "iso3")])
-  #View(dat[grepl("7000|R2013",dat$strata_id) & dat$iso3 == "IND",c("recnr", "ref_id", "strata_id", "location_long", "location_short")])
+  #View(dat[grepl("R2013",dat$strata_id) & dat$iso3 == "IND",c("recnr", "ref_id", "strata_id", "location_long", "location_short")])
   #View(dat[grepl("7000",dat$strata_id) & dat$iso3 == "IND",c("recnr", "ref_id", "strata_id", "location_long", "location_short")])
-  # For those with 7000 in strata_id
   datINDsub <- dat[grepl("7000|R2013",dat$strata_id) & dat$iso3 == "IND",]
   datINDsub$strata_id <- trimws(datINDsub$strata_id)
   datINDsub$strata_id <- sub("[A-Za-z]+$", "", datINDsub$strata_id)
@@ -126,8 +126,10 @@ if(ageSexSuffix %in% c("01to59m")){
   datINDsub$strata_id <- sub("-$", "", datINDsub$strata_id)
   datINDsub$strata_id <- trimws(datINDsub$strata_id)
   datINDsub$strata_id <- sub("[A-Za-z]+$", "", datINDsub$strata_id)
+  datINDsub$strata_id <- sub("-$", "", datINDsub$strata_id)
   datINDsub$strata_id <- trimws(datINDsub$strata_id)
   datINDsub$strata_id <- sub("[A-Za-z]+$", "", datINDsub$strata_id)
+  datINDsub <- datINDsub[order(datINDsub$strata_id),]
   datINDsub$strata_id <- paste0(datINDsub$strata_id, "-", 1:nrow(datINDsub))
   dat <- rbind(subset(dat, !(ref_id %in% datINDsub$ref_id)), datINDsub)
   # Check that strata_id is still unique
