@@ -25,9 +25,6 @@ names(old)[!(names(old) %in% names(new))]
 # Columns in new that are not in old
 names(new)[!(names(new) %in% names(old))]
 
-# Update recnr in new studies
-new$recnr <- max(old$recnr) + new$recnr 
-
 # Combine
 dat <- rbind(old, new)
 dat <- dat %>%
