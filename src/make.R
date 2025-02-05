@@ -57,7 +57,7 @@ if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){
 
 source("./src/update-old-studies/create-covar-key.R", local=new.env())
 #source("./src/update-old-studies/audit-covar.R", local=new.env())
-if(ageSexSuffix %in% c("01to59m")){ # Will also add these for neonates soon**
+if(ageSexSuffix %in% c("01to59m")){ # !!!! will also add these for neonates soon
   source("./src/update-old-studies/add-new-extracted-vars.R", local=new.env())
 }
 source("./src/update-old-studies/set-idvars.R", local=new.env())
