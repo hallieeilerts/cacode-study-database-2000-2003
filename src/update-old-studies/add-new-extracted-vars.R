@@ -35,32 +35,18 @@ dat <- merge(df_studies, df_extract, by = "study_id", all.x = TRUE)
 #View(dat[,c("study_id", "iso3","citation","VA.algorithm","va_alg_src","age_lb_m.x","age_ub_m.x","age_lb_m.y","age_ub_m.y")])
 #View(subset(dat, is.na(age_ub_m.y))[,c("study_id", "iso3","citation","VA.algorithm","va_alg_src","age_lb_m.x","age_ub_m.x","age_lb_m.y","age_ub_m.y")])
 
-# Some missing ages and VA information for MDS studies
-# And a handful of others
-# View(dat[grepl("7000",dat$study_id) & dat$iso3 == "IND",c("study_id", "iso3","citation","VA.algorithm","va_alg_src","age_lb_m.x","age_ub_m.x","age_lb_m.y","age_ub_m.y")])
-
-# Subset and recode manually
-dat_mds <- dat[grepl("7000",dat$study_id) & dat$iso3 == "IND",]
-dat_other <- subset(dat, !(study_id %in% dat_mds$study_id))
-
-# MDS studies
-dat_mds$VA.algorithm <- "Physician-coded"
-dat_mds$va_alg_src <- "study"
-dat_mds$age_lb_m <- 1
-dat_mds$age_ub_m <- 59
-
-# Other studies with missing extracted information
+# Studies with missing extracted information
+# ***I think Astha identified these as duplicates and therefore didn't bother extracting new information
 #View(subset(dat_other, is.na(VA.algorithm))[,c("study_id", "iso3","citation","VA.algorithm","va_alg_src","age_lb_m.x","age_ub_m.x","age_lb_m.y","age_ub_m.y")])
-#View(dat_other[,c("study_id", "iso3","citation","VA.algorithm","va_alg_src","age_lb_m.x","age_ub_m.x","age_lb_m.y","age_ub_m.y")])
+#View(dat[,c("study_id", "iso3","citation","VA.algorithm","va_alg_src","age_lb_m.x","age_ub_m.x","age_lb_m.y","age_ub_m.y")])
 # Use old information when missing
-dat_other$age_lb_m <- dat_other$age_lb_m.y
-dat_other$age_lb_m[is.na(dat_other$age_lb_m)] <- dat_other$age_lb_m.x[is.na(dat_other$age_lb_m)] 
-dat_other$age_ub_m <- dat_other$age_ub_m.y
-dat_other$age_ub_m[is.na(dat_other$age_ub_m)] <- dat_other$age_ub_m.x[is.na(dat_other$age_ub_m)] 
-dat_other$va_alg_src[is.na(dat_other$VA.algorithm)] <- "study"
-dat_other$VA.algorithm[is.na(dat_other$VA.algorithm)] <- "Not reported"
+dat$age_lb_m <- dat$age_lb_m.y
+dat$age_lb_m[is.na(dat$age_lb_m)] <- dat$age_lb_m.x[is.na(dat$age_lb_m)] 
+dat$age_ub_m <- dat$age_ub_m.y
+dat$age_ub_m[is.na(dat$age_ub_m)] <- dat$age_ub_m.x[is.na(dat$age_ub_m)] 
+dat$va_alg_src[is.na(dat$VA.algorithm)] <- "study"
+dat$VA.algorithm[is.na(dat$VA.algorithm)] <- "Not reported"
 
-dat <- rbind(dat_other, dat_mds)
 nrow(dat) == nrow(studies)
 
 dat <- dat %>%
