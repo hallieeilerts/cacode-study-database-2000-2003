@@ -16,7 +16,8 @@ dat_filename <- tail(sort(dat_filename),1) # Most recent
 dat <- read.csv(paste0("./gen/create-studydb/output/", dat_filename, sep = ""))
 ################################################################################
 
-dat$Other <- dat$Other + dat$Malnutrition
+dat$Other <- ifelse(!is.na(dat$Malnutrition) & !is.na(dat$Other), dat$Other + dat$Malnutrition, dat$Other)
+dat$Other <- ifelse(!is.na(dat$Malnutrition) & is.na(dat$Other), dat$Malnutrition, dat$Other)
 dat$Malnutrition <- NULL
 
 # Save outputs ------------------------------------------------------------
