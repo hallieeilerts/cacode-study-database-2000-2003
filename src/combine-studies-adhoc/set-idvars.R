@@ -98,6 +98,7 @@ dat <- dat[order(dat$id),]
 
 # Save output -------------------------------------------------------------
 
-write.csv(dat, paste0("./gen/combine-studies-adhoc/output/StudiesAdHoc2023.csv", sep =""), row.names = FALSE)
+write.csv(dat, paste0("./gen/combine-studies-adhoc/output/StudiesAdHoc2023.csv"), row.names = FALSE)
 
-
+# Create one for StudyData-DHS region matching
+# write.csv(dat, paste0("./gen/combine-studies-adhoc/output/StudiesAdHoc2023","_",format(Sys.Date(), format="%Y%m%d"),".csv"), row.names = FALSE)
