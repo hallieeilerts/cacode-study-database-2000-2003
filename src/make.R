@@ -66,6 +66,7 @@ if(ageSexSuffix %in% c("00to28d", "01to59m")){
 }
 source("./src/update-old-studies/harmonize-cod.R", local=new.env())
 source("./src/update-old-studies/update-covar-names-scales.R", local=new.env())
+source("./src/update-old-studies/merge-old-study-pfpr.R", local=new.env())
 source("./src/update-old-studies/create-covar-replacement-key.R", local=new.env())
 source("./src/update-old-studies/update-covar.R", local=new.env())
 if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){ 

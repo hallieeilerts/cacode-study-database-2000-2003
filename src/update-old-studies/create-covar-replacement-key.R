@@ -11,7 +11,7 @@ library(data.table)
 #' Inputs
 source("./src/set-inputs.R")
 ## Old age-specific study database in long format that now has covariate names and scales as pred database
-dat <- read.csv(paste0("./gen/update-old-studies/temp/studies-long_upd-names-scales_", ageSexSuffix, ".csv"))
+dat <- read.csv(paste0("./gen/update-old-studies/temp/studies-long_merge-pfpr_", ageSexSuffix, ".csv"))
 ## Covariate data extraction from DHS
 dat_filename <- list.files("./data/dhs")
 dat_filename <- dat_filename[grepl("long", dat_filename, ignore.case = TRUE)]
@@ -38,12 +38,14 @@ v_predInd_covar <- subset(key_covar, !is.na(predInd))$pred
 v_predInd_covar <- v_predInd_covar[!is.na(v_predInd_covar)]
 v_predInd_covar <- v_predInd_covar[v_predInd_covar %in% v_dhs_covar]
 
-# Assign source to study covariates 
+# Assign source_type to study covariates
+# Assigning "article" even when not explicitly from the article. This is shorthand for not needing to update the covariate.
 # Article and survey data points do not need to be updated
 df_src <- dat %>%
   mutate(source_type = ifelse(grepl("article", source, ignore.case = TRUE), "Article", NA)) %>%
   mutate(source_type = ifelse(grepl("author", source, ignore.case = TRUE), "Article", source_type)) %>%
   mutate(source_type = ifelse(grepl("same study", source, ignore.case = TRUE), "Article", source_type)) %>%
+  mutate(source_type = ifelse(grepl("MAP2025", source), "Article", source_type)) %>%
   mutate(source_type = ifelse(grepl("INDEPTH", source), "Article", source_type)) %>%
   mutate(source_type = ifelse(grepl("HDSS", source), "Article", source_type)) %>%
   mutate(source_type = ifelse(grepl("China Statistics year book", source), "Article", source_type)) %>%

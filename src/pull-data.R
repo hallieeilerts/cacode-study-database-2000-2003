@@ -95,4 +95,11 @@ for(i in 1:length(dat_filename)){
             to   = paste0("./data/dhs/",dat_filename[i]))
 }
 
-
+# pfpr covariate data
+fn_initEnvironmentData("study-pfpr")
+dat_filename <- list.files(paste0(pathDataWarehouse, "/2000-2023/data/study-pfpr", sep = ""))
+dat_filename <- dat_filename[grepl("pfpr_map", dat_filename, ignore.case = TRUE)]
+for(i in 1:length(dat_filename)){
+  file.copy(from = paste0(pathDataWarehouse, "/2000-2023/data/study-pfpr/",dat_filename[i], sep = ""),
+            to   = paste0("./data/study-pfpr/",dat_filename[i]))
+}

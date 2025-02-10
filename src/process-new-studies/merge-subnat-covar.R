@@ -82,7 +82,7 @@ nrow(df_miss) + nrow(df_match) == nrow(df_covar)
 
 # Make source column for match
 df_match$region_name[df_match$region_name == "XXNATIONALXX"] <- ""
-df_match$source <- paste(df_match$survey_id, df_match$admin_level, df_match$region_name, sep = "_")
+df_match$source <- paste(df_match$survey_id, df_match$admin_level, sub(" ", "-",df_match$region_name), sep = "_")
 df_match$source <- gsub("\\-$", "", df_match$source)
 
 # Merge back with study covariates that were not matched to a dhs value

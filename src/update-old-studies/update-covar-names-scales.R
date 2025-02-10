@@ -116,6 +116,7 @@ if(any(grepl("_source", names(dat)))){
 
 # Merge back with CODs
 datLong <- merge(datCOD, datCovarLong, by = idVars)
+datLong <- datLong[order(datLong$recnr, datLong$variable),]
 
 # Save output -------------------------------------------------------------
 
