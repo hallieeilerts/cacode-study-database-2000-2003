@@ -34,6 +34,8 @@ adhoc <- adhoc %>%
          location_long = NA,
          strata_other1 = NA,
          strata_other2 = NA,
+         citation = NA,
+         author = NA,
          totdeaths = totdeaths_orig) %>%
   rename(va_alg = VA.algorithm,
          year_mid = yr_mid, 

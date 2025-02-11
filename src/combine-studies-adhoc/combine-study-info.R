@@ -15,6 +15,7 @@ source("./src/set-inputs.R")
 studychar <- read.csv(paste0("./gen/combine-studies-adhoc/temp/study-char_clean-col.csv", sep = ""))
 studycod <- read.csv(paste0("./gen/combine-studies-adhoc/temp/study-cod_clean-col.csv", sep = ""))
 studyloc <- read.csv(paste0("./gen/combine-studies-adhoc/temp/study-loc_clean-col.csv", sep = ""))
+studycitations <- read.csv(paste0("./gen/combine-studies-adhoc/temp/study-citations_clean-col.csv", sep = ""))
 ################################################################################
 
 ## Merge study characteristics and cod
@@ -63,14 +64,19 @@ dat1$tempid <- NULL
 nrow(dat1) # 550
 
 # Merge study locations
-dat <- merge(dat1, studyloc, by = c("ref_id","strata_id"))
-nrow(dat1) == nrow(dat)
-nrow(dat) # 540
+dat2 <- merge(dat1, studyloc, by = c("ref_id","strata_id"))
+nrow(dat1) == nrow(dat2)
+nrow(dat2) # 540
 # Lost the 10 study data points corresponding to studies where CODs are aggregated across multiple countries.
 # This is ok.
 
+# Merge study citations
+dat3 <- merge(dat2, studycitations, by = c("ref_id","strata_id"), all.x = TRUE)
+nrow(dat2) == nrow(dat3)
+nrow(dat3) # 540
+
 # Drop rows that are (1) missing cod_n due to missing denominators or (2) facility studies
-dat <- dat %>%
+dat <- dat3 %>%
   filter(remove==0) %>%
   select(-c(Facility, remove))
 nrow(dat) # 305

@@ -47,6 +47,9 @@ if(ageSexSuffix %in% c("00to28d")){
 
 if(ageSexSuffix %in% c("01to59m")){
   
+  dat$author <- stri_trans_general(dat$author, "Latin-ASCII")
+  dat$citation <- stri_trans_general(dat$citation, "Latin-ASCII")
+  
   dat$nationalrep[is.na(dat$nationalrep)] <- 0
   dat$reterm <- ifelse(dat$nationalrep == 1, dat$iso3, paste(dat$iso3, ".", dat$study_id))
   
