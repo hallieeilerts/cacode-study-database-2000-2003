@@ -1,5 +1,5 @@
 ################################################################################
-#' @description Merge on study-level pfpr
+#' @description Merge on study-level pfpr for old 5-19y studies
 #' @return Study data points with covariates in long format, including study-level pfpr
 ################################################################################
 #' Clear environment
@@ -11,24 +11,41 @@ library(data.table)
 #' Inputs
 source("./src/set-inputs.R")
 ## Old age-specific study database in long format that now has covariate names and scales as pred database
-dat <- read.csv(paste0("./gen/update-old-studies/temp/studies-long_upd-names-scales_", ageSexSuffix, ".csv"))
+# Old 1-59m already had study-level pfpr. And old neonate study database did not include pfpr.
+if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){ 
+  dat <- read.csv(paste0("./gen/update-old-studies/temp/studies-long_upd-names-scales_", ageSexSuffix, ".csv"))
+}
 ## PFPR data from MAP
 dat_filename <- list.files("./data/study-pfpr")
 dat_filename <- dat_filename[grepl("pfpr_map", dat_filename, ignore.case = TRUE)]
 pfpr <- read.csv(paste0("./data/study-pfpr/", dat_filename, sep = ""))
 ################################################################################
 
-df_pfpr <- pfpr[,c("strata_id", "PfPR_rmean")]
-names(df_pfpr)[which(names(df_pfpr) == "PfPR_rmean")] <- "pfpr"
-df_pfpr$variable <- "pfpr"
+df_pfpr <- pfpr
+df_pfpr$strata_id <- sapply(df_pfpr$strata_id, function(x) gsub("[^[:alnum:]\\s]", "-", x))
+
+# Check duplicates and take smaller administrative area
+df_pfpr <- df_pfpr %>% 
+  group_by(strata_id) %>%
+  mutate(n = n(),
+         nAdmin = uniqueN(ADMIN)) %>% 
+  arrange(strata_id, ADMIN) %>% 
+  mutate(nrec = 1:n(),
+         maxrec = max(nrec),
+         exclude = ifelse(n> 1 & nrec != maxrec, 1, 0)) %>% 
+  filter(exclude == 0) %>%
+  select(strata_id, PfPR_rmean) %>%
+  rename(pfpr = PfPR_rmean) %>%
+  mutate(variable = "pfpr")
 
 dat <- dat %>%
   left_join(df_pfpr, by = c("strata_id", "variable"))
 
 dat$source[!is.na(dat$pfpr)] <- "MAP20250205_StudyLevel"
 dat$value[!is.na(dat$pfpr)] <- dat$pfpr[!is.na(dat$pfpr)]
+dat$pfpr <- NULL
 
 # Save output -------------------------------------------------------------
 
-write.csv(datLong , paste0("./gen/update-old-studies/temp/studies-long_merge-pfpr_", ageSexSuffix, ".csv"), row.names = FALSE)
+write.csv(dat , paste0("./gen/update-old-studies/temp/studies-long_merge-pfpr_", ageSexSuffix, ".csv"), row.names = FALSE)
 

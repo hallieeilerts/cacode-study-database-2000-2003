@@ -11,8 +11,12 @@ library(tidyverse)
 library(data.table)
 #' Inputs
 source("./src/set-inputs.R")
-## Old age-specific study database that now has covariate names and scales as pred database
-dat <- read.csv(paste0("./gen/update-old-studies/temp/studies-long_upd-names-scales_", ageSexSuffix, ".csv", sep = ""))
+## Old age-specific study database in long format that now has covariate names and scales as pred database
+dat <- read.csv(paste0("./gen/update-old-studies/temp/studies-long_upd-names-scales_", ageSexSuffix, ".csv"))
+## Old age-specific study database in long format that now has covariate names and scales as pred database, and study-level pfpr
+if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){ 
+  dat <- read.csv(paste0("./gen/update-old-studies/temp/studies-long_merge-pfpr_", ageSexSuffix, ".csv"))
+}
 ## Prediction database
 dat_filename <- list.files("./data/prediction-database")
 dat_filename <- dat_filename[grepl("long", dat_filename, ignore.case = TRUE)]

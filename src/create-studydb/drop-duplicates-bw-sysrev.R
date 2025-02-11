@@ -92,7 +92,7 @@ nrow(df_batch1)
 # nrow(df_batch5)
 # View(df_batch5[,c("tempid","round","id","strata_id","location_long","age_lb_m","age_ub_m","totdeaths", v_cod)])
 
-# Ad-hoc duplicate dropping
+# Duplicate dropping
 if(ageSexSuffix == "00to28d"){
   v_exclude_strataid <- c("R2019-62-198") # R2019-62-198 is duplicate of R202222679-09 in 2000-2023
 }

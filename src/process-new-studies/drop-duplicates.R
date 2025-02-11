@@ -93,10 +93,12 @@ df_batch1 <- datWide %>%
 # Ad-hoc duplicate dropping
 if(ageSexSuffix == "00to28d"){
   # strata_id
+  # batch1
   v_exclude_strataid <- c("R20228-01") # R20228-01 is a duplicate of R202225680-01
   v_exclude_strataid <- c(v_exclude_strataid, "R202225431-01") #  R202225431-01 is a duplicate of R202211119-01
   v_exclude_strataid <- c(v_exclude_strataid, "R202225431-02") #  R202225431-02 is a duplicate of R202211119-02
   v_exclude_strataid <- c(v_exclude_strataid, "R202225180-02") #  R202225180-02 is primary cause, keeping underlying R202225180-05
+  # batch4
   v_exclude_strataid <- c(v_exclude_strataid, "R202215420-01") #  R202215420-01 is intervention arm of a trial (R202215420-02 is control group)
   v_exclude_strataid <- c(v_exclude_strataid, "R202223172-01") #  R202223172-01 is intervention arm of a trial (R202223172-02 is control group)
   # Exclude entire article
