@@ -48,8 +48,9 @@ if(ageSexSuffix %in% c("00to28d")){
         . == "VA.algorithm" ~ "va_alg",
         . == "va_alg_stat" ~ "va_alg_src",
         . == "sid" ~ "study_id",
+        . == "study_loc" ~ "location_long",
         TRUE ~ .)) %>%
-    select(c("study_id", "va_alg", "va_alg_src", "age_lb_m", "age_ub_m", "citation", "author"))
+    select(c("study_id", "va_alg", "va_alg_src", "age_lb_m", "age_ub_m", "citation", "author", "location_long"))
   
   df_extract$author[grepl("http", df_extract$author, ignore.case = TRUE)] <- NA
   df_extract$author <- stri_trans_general(df_extract$author, "Latin-ASCII")

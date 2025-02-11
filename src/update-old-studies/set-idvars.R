@@ -33,15 +33,22 @@ if(ageSexSuffix %in% c("00to28d")){
     mutate(recnr = 1:n(),
            ref_id = studyid,
            strata_id = paste("R2019", studyid, sid, sep = "-"), # must be unique. studyid is not.
-           location_short = sub('\\..*', '', lab),
            sex = sexLabels[1]) %>%
     rename(article_id = studyid,
            iso3 = isocode,
-           location_long = lab,
            countryname = country,
            year_mid = year,
     ) %>%
     select(-c(sid, natrep, studyid_1, period, per_early, per_late, regSSA, regSA, premvslbw, first, last, N)) 
+  
+  # study location
+  dat$location_char <- dat$location_long
+  dat$location_short <- dat$location_char
+  dat$location_char_n <- lengths(gregexpr("\\W+", dat$location_char))
+  dat$location_char_capwords <- unlist(lapply(str_extract_all(dat$location_char, "\\b[A-Z]\\w+"), function(x) x[1]))
+  dat$location_short[dat$location_char_n > 4 & !is.na(dat$location_char_capwords)] <- dat$location_char_capwords[dat$location_char_n > 4 & !is.na(dat$location_char_capwords)]
+  
+  
 }
 
 
