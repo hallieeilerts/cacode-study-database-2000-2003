@@ -17,7 +17,9 @@ if(ageSexSuffix %in% c("00to28d")){
   dat_filename <- dat_filename[grepl("neonates", dat_filename)]
   studies <- read.dta13(paste0("./data/study-data-old/", dat_filename, sep = ""), nonint.factors = T)
   ## Newly extracted variables for old studies
-  extract <- read_excel(paste0("./data/study-data-old-augmented/old neonatal data_02102025.xlsx", sep = ""))
+  dat_filename <- list.files("./data/study-data-old-augmented")
+  dat_filename <- dat_filename[grepl("neonat", dat_filename)]
+  extract <- read_excel(paste0("./data/study-data-old-augmented/", dat_filename, sep = ""))
 }
 if(ageSexSuffix %in% c("01to59m")){
   ## Old study database
@@ -25,7 +27,9 @@ if(ageSexSuffix %in% c("01to59m")){
   dat_filename <- dat_filename[grepl("combined", dat_filename)]
   studies <- read.dta13(paste0("./data/study-data-old/", dat_filename, sep = ""), nonint.factors = T)
   ## Newly extracted variables for old studies
-  extract <- read_excel(paste0("./data/study-data-old-augmented/old 1to59_20250203.xlsx", sep = ""))
+  dat_filename <- list.files("./data/study-data-old-augmented")
+  dat_filename <- dat_filename[grepl("1to59", dat_filename)]
+  extract <- read_excel(paste0("./data/study-data-old-augmented/", dat_filename, sep = ""))
 }
 ################################################################################
 
