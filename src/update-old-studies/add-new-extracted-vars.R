@@ -11,22 +11,39 @@ library(stringr)
 library(readxl)
 #' Inputs
 source("./src/set-inputs.R")
-## Old study database
+if(ageSexSuffix %in% c("00to28d")){
+  ## Old study database
+  dat_filename <- list.files("./data/study-data-old")
+  dat_filename <- dat_filename[grepl("neonates", dat_filename)]
+  studies <- read.dta13(paste0("./data/study-data-old/", dat_filename, sep = ""), nonint.factors = T)
+  ## Newly extracted variables for old studies
+  extract <- read_excel(paste0("./data/study-data-old-augmented/old neonatal data_02102025.xlsx", sep = ""))
+}
 if(ageSexSuffix %in% c("01to59m")){
+  ## Old study database
   dat_filename <- list.files("./data/study-data-old")
   dat_filename <- dat_filename[grepl("combined", dat_filename)]
   studies <- read.dta13(paste0("./data/study-data-old/", dat_filename, sep = ""), nonint.factors = T)
+  ## Newly extracted variables for old studies
+  extract <- read_excel(paste0("./data/study-data-old-augmented/old 1to59_20250203.xlsx", sep = ""))
 }
-## Newly extracted variables for old studies
-extract <- read_excel(paste0("./data/study-data-old-augmented/old 1to59_20250203.xlsx", sep = ""))
 ################################################################################
 
 # Rename columns
 df_extract <- extract %>%
-  rename(va_alg_src = va_alg_stat) %>%
-  select(study_id, VA.algorithm, va_alg_src, age_lb_m, age_ub_m)
+  rename_with(
+    ~ case_when(
+      . == "VA.algorithm" ~ "va_alg",
+      . == "va_alg_stat" ~ "va_alg_src",
+      . == "sid" ~ "study_id",
+      TRUE ~ .)) %>%
+  select(any_of(c("study_id", "va_alg", "va_alg_src", "age_lb_m", "age_ub_m")))
   
 df_studies <- studies %>%
+  rename_with(
+    ~ case_when(
+      . == "sid" ~ "study_id",
+      TRUE ~ .)) %>%
   mutate(study_id = trimws(study_id))
 
 dat <- merge(df_studies, df_extract, by = "study_id", all.x = TRUE)
@@ -40,17 +57,25 @@ dat <- merge(df_studies, df_extract, by = "study_id", all.x = TRUE)
 #View(subset(dat_other, is.na(VA.algorithm))[,c("study_id", "iso3","citation","VA.algorithm","va_alg_src","age_lb_m.x","age_ub_m.x","age_lb_m.y","age_ub_m.y")])
 #View(dat[,c("study_id", "iso3","citation","VA.algorithm","va_alg_src","age_lb_m.x","age_ub_m.x","age_lb_m.y","age_ub_m.y")])
 # Use old information when missing
-dat$age_lb_m <- dat$age_lb_m.y
-dat$age_lb_m[is.na(dat$age_lb_m)] <- dat$age_lb_m.x[is.na(dat$age_lb_m)] 
-dat$age_ub_m <- dat$age_ub_m.y
-dat$age_ub_m[is.na(dat$age_ub_m)] <- dat$age_ub_m.x[is.na(dat$age_ub_m)] 
-dat$va_alg_src[is.na(dat$VA.algorithm)] <- "study"
-dat$VA.algorithm[is.na(dat$VA.algorithm)] <- "Not reported"
+if("age_lb_m" %in% names(dat)){
+  # This variable re-extracted for old 1-59m studies but not neonate
+  dat$age_lb_m <- dat$age_lb_m.y
+  dat$age_lb_m[is.na(dat$age_lb_m)] <- dat$age_lb_m.x[is.na(dat$age_lb_m)] 
+  dat$age_ub_m <- dat$age_ub_m.y
+  dat$age_ub_m[is.na(dat$age_ub_m)] <- dat$age_ub_m.x[is.na(dat$age_ub_m)] 
+}
+
+dat$va_alg_src[is.na(dat$va_alg)] <- "study"
+dat$va_alg[is.na(dat$va_alg)] <- "Not reported"
 
 nrow(dat) == nrow(studies)
 
 dat <- dat %>%
-  select(-c(age_lb_m.x, age_lb_m.y, age_ub_m.x, age_ub_m.y))
+  rename_with(
+    ~ case_when(
+      . == "study_id" ~ "sid", # Convert back to sid for neonate studies
+      TRUE ~ .)) %>%
+  select(-any_of(c("age_lb_m.x", "age_lb_m.y", "age_ub_m.x", "age_ub_m.y")))
 
 # Save output -------------------------------------------------------------
 

@@ -11,17 +11,11 @@ library(stringr)
 library(readstata13)
 #' Inputs
 source("./src/set-inputs.R")
-## Old study databases
-if(ageSexSuffix %in% c("00to28d")){
-  dat_filename <- list.files("./data/study-data-old")
-  dat_filename <- dat_filename[grepl("neonates", dat_filename)]
-  dat  <- read.dta13(paste0("./data/study-data-old/", dat_filename, sep = ""), nonint.factors = T)
-}
-if(ageSexSuffix %in% c("01to59m")){
-  dat_filename <- list.files("./data/study-data-old")
-  dat_filename <- dat_filename[grepl("combined", dat_filename)]
+## Old study databases with newly extracted VA algorithm information
+if(ageSexSuffix %in% c("00to28d", "01to59m")){
   dat <- read.csv(paste0("./gen/update-old-studies/temp/studies_add-extracted-vars_", ageSexSuffix, ".csv"))
 }
+## Old study databases
 if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){
   dat <- read.csv(paste0("./gen/recover-studies2019-5to19y/output/Studies2019_", ageSexSuffix, ".csv", sep = ""))
 }
@@ -38,7 +32,7 @@ if(ageSexSuffix %in% c("00to28d")){
   dat <- dat %>%
     mutate(recnr = 1:n(),
            ref_id = studyid,
-           strata_id = paste("R2019",studyid, sid, sep = "-"), # must be unique. studyid is not.
+           strata_id = paste("R2019", studyid, sid, sep = "-"), # must be unique. studyid is not.
            location_short = sub('\\..*', '', lab),
            sex = sexLabels[1]) %>%
     rename(article_id = studyid,
@@ -174,6 +168,8 @@ if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF", "15to19yM")){
 # Harmonize VA algorithms (if present)
 if("va_alg" %in% names(dat)){
   dat$va_alg[grepl("Physician", dat$va_alg, ignore.case = TRUE)] <- "PCVA"
+  dat$va_alg[grepl("EAVA", dat$va_alg, ignore.case = TRUE)] <- "EAVA"
+  dat$va_alg[grepl("CCVA", dat$va_alg, ignore.case = TRUE)] <- "Other"
   dat$va_alg[grepl("Other", dat$va_alg, ignore.case = TRUE)] <- "Other"
   dat$va_alg[grepl("inter", dat$va_alg, ignore.case = TRUE)] <- "InterVA"
   dat$va_alg[grepl("insilico", dat$va_alg, ignore.case = TRUE)] <- "InSilico"
@@ -182,7 +178,9 @@ if("va_alg" %in% names(dat)){
   dat$va_alg[is.na(dat$va_alg)] <- "Not reported"
   
   # Source of VA algorithm information (VA algorithm status)
+  #unique(dat$va_alg)
   # Should be "study" or "assumed"
+  #unique(dat$va_alg_src)
 }
 
 ## Ensure presence of all idvars
