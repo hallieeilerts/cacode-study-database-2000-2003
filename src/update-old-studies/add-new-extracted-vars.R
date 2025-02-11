@@ -9,6 +9,8 @@ library(tidyverse)
 library(data.table)
 library(stringr)
 library(readxl)
+library(stringi) # removing accents of letters
+library(readstata13)
 #' Inputs
 source("./src/set-inputs.R")
 if(ageSexSuffix %in% c("00to28d")){
@@ -33,16 +35,39 @@ if(ageSexSuffix %in% c("01to59m")){
 }
 ################################################################################
 
-# Rename columns
-df_extract <- extract %>%
-  rename_with(
-    ~ case_when(
-      . == "VA.algorithm" ~ "va_alg",
-      . == "va_alg_stat" ~ "va_alg_src",
-      . == "sid" ~ "study_id",
-      TRUE ~ .)) %>%
-  select(any_of(c("study_id", "va_alg", "va_alg_src", "age_lb_m", "age_ub_m")))
+if(ageSexSuffix %in% c("00to28d")){
   
+  df_extract <- extract %>%
+    mutate(
+      age_lb_m = ifelse(period %in% c("early", "overall"), 0, 7/ 30),
+      age_ub_m = ifelse(period == "early", 7/30, 28/30),
+      author = gsub("(.+?)(\\,.*)", "\\1", citation)
+    ) %>%
+    rename_with(
+      ~ case_when(
+        . == "VA.algorithm" ~ "va_alg",
+        . == "va_alg_stat" ~ "va_alg_src",
+        . == "sid" ~ "study_id",
+        TRUE ~ .)) %>%
+    select(c("study_id", "va_alg", "va_alg_src", "age_lb_m", "age_ub_m", "citation", "author"))
+  
+  df_extract$author[grepl("http", df_extract$author, ignore.case = TRUE)] <- NA
+  df_extract$author <- stri_trans_general(df_extract$author, "Latin-ASCII")
+  df_extract$citation <- stri_trans_general(df_extract$citation, "Latin-ASCII")
+  
+}
+if(ageSexSuffix %in% c("01to59m")){
+  df_extract <- extract %>%
+    rename_with(
+      ~ case_when(
+        . == "VA.algorithm" ~ "va_alg",
+        . == "va_alg_stat" ~ "va_alg_src",
+        . == "sid" ~ "study_id",
+        TRUE ~ .)) %>%
+    select(c("study_id", "va_alg", "va_alg_src", "age_lb_m", "age_ub_m"))
+}
+
+
 df_studies <- studies %>%
   rename_with(
     ~ case_when(
@@ -61,8 +86,8 @@ dat <- merge(df_studies, df_extract, by = "study_id", all.x = TRUE)
 #View(subset(dat_other, is.na(VA.algorithm))[,c("study_id", "iso3","citation","VA.algorithm","va_alg_src","age_lb_m.x","age_ub_m.x","age_lb_m.y","age_ub_m.y")])
 #View(dat[,c("study_id", "iso3","citation","VA.algorithm","va_alg_src","age_lb_m.x","age_ub_m.x","age_lb_m.y","age_ub_m.y")])
 # Use old information when missing
-if("age_lb_m" %in% names(dat)){
-  # This variable re-extracted for old 1-59m studies but not neonate
+if(ageSexSuffix %in% c("01to59m")){
+  # This variable was already in the old 1-59m studies but not neonate
   dat$age_lb_m <- dat$age_lb_m.y
   dat$age_lb_m[is.na(dat$age_lb_m)] <- dat$age_lb_m.x[is.na(dat$age_lb_m)] 
   dat$age_ub_m <- dat$age_ub_m.y
