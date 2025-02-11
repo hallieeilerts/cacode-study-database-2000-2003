@@ -71,7 +71,7 @@ nrow(dat2) # 540
 # This is ok.
 
 # Merge study citations
-dat3 <- merge(dat2, studycitations, by = c("ref_id","strata_id"), all.x = TRUE)
+dat3 <- merge(dat2, studycitations, by = c("ref_id"), all.x = TRUE)
 nrow(dat2) == nrow(dat3)
 nrow(dat3) # 540
 

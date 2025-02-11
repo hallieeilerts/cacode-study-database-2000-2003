@@ -11,13 +11,14 @@ library(stringi)
 source("./src/set-inputs.R")
 ## Studies and their citations from 2000-2023 systematic review
 dat_filename <- list.files("./data/study-data")
-dat_filename <- dat_filename[grepl("citations", dat_filename, ignore.case = TRUE)]
+dat_filename <- dat_filename[grepl("bibliography", dat_filename, ignore.case = TRUE)]
 dat <- read_excel(paste0("./data/study-data/", dat_filename, sep = ""))
 ################################################################################
 
 # Rename columns
 dat <- dat %>%
-  rename(citation = Citation)
+  rename(citation = Bibliography,
+         ref_id = Refid)
 
 # remove special characters
 dat$citation <- stri_trans_general(dat$citation, "Latin-ASCII")
@@ -27,7 +28,7 @@ dat$author = gsub("(.+?)(\\,.*)", "\\1", dat$citation)
 dat$author[grepl("population-based", dat$author, ignore.case = TRUE)] <- NA
 
 # Keep necessary columns
-dat <- dat[,c("strata_id", "ref_id", "citation", "author")]
+dat <- dat[,c("ref_id", "citation", "author")]
 
 # Save output -------------------------------------------------------------
 
