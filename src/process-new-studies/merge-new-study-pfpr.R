@@ -23,7 +23,7 @@ df_pfpr$strata_id <- sapply(df_pfpr$strata_id, function(x) gsub("[^[:alnum:]\\s]
 df_pfpr <- df_pfpr %>% 
   group_by(strata_id) %>%
   mutate(n = n(),
-         nAdmin = uniqueN(ADMIN)) %>% 
+         nAdmin = n_distinct(ADMIN)) %>% 
   arrange(strata_id, ADMIN) %>% 
   mutate(nrec = 1:n(),
          maxrec = max(nrec),
