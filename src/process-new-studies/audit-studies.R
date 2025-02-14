@@ -52,7 +52,7 @@ v_cod_reclass  <- unique(subset(key, !is.na(cod_reclass))$cod_reclass)
 # Exclude "TB" which has been redistributed (only present in 5-9y and 10-14y reclass vector)
 # Exclude "Undetermined" because any deaths attributed to Undetermined have been excluded in exclude-by-size
 v_cod_reclass <- v_cod_reclass[!(v_cod_reclass %in% c("TB", "Undetermined"))]
-v_id <- c("id","totdeaths","exclude_reason")
+v_id <- c("id", "strata_id", "article_id","totdeaths","exclude_reason")
 
 dat_incl <- dat
 dat_incl$exclude_reason <- NA
@@ -73,8 +73,9 @@ all$excluded <- ifelse(!is.na(all$exclude_reason), 1, 0)
 all$n_new <- sum(all$included)
 all$n_exc <- sum(all$excluded)
 all$perincrease <- all$n_new/all$n_old
-
 all <- all[order(all$id),]
+
+# Save output(s) ----------------------------------------------------------
 
 write.csv(all, paste0("./gen/process-new-studies/audit/StudyDatabaseChanges_",ageSexSuffix,"_", resDate,".csv"), row.names = FALSE)
 
