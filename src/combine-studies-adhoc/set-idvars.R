@@ -56,14 +56,47 @@ dat$nationalrep[dat$nationalrep == "National"] <- 1
 dat$nationalrep[dat$nationalrep == "yes"] <- 1
 dat$nationalrep <- as.numeric(dat$nationalrep)
 
-# Harmonize VA algorithms
-dat$va_alg[grepl("Physician", dat$va_alg, ignore.case = TRUE)] <- "PCVA"
-dat$va_alg[grepl("Other", dat$va_alg, ignore.case = TRUE)] <- "Other"
-dat$va_alg[grepl("inter", dat$va_alg, ignore.case = TRUE)] <- "InterVA"
+# VA algorithm
+# If two algorithms are listed in va_alg, and the relevant one is specified in strata_other1, replace it.
+nrow(dat) # 557
+dat$tempid <- 1:nrow(dat)
+df_multva <- dat[grepl("and", dat$va_alg, ignore.case = TRUE),]
+df_other <- subset(dat, !(tempid %in% df_multva$tempid))
+#View(df_multva[,c("strata_id","strata_other1", "va_alg")])
+#View(subset(df_multva, strata_id %in% c("R202210800-01","R202210800-02")))
+df_multva$va_alg[grepl("eava|expert", df_multva$strata_other1, ignore.case = TRUE)] <- "EAVA"
+df_multva$va_alg[grepl("pcva|physician coded verbal autopsy", df_multva$strata_other1, ignore.case = TRUE)] <- "PCVA"
+df_multva$va_alg[grepl("smartva", df_multva$strata_other1, ignore.case = TRUE)] <- "SmartVA"
+df_multva$va_alg[grepl("tariff", df_multva$strata_other1, ignore.case = TRUE)] <- "Tariff"
+df_multva$va_alg[grepl("medical assistants", df_multva$strata_other1, ignore.case = TRUE)] <- "PCVA"
+df_multva$va_alg[grepl("interva", df_multva$strata_other1, ignore.case = TRUE)] <- "InterVA"
+# Manual check
+# View(df_multva[df_multva$article_id %in% c("R202210800"),])
+df_multva$va_alg[df_multva$article_id == "R202210800"] <- "EAVA" 
+# Ad-hoc corrections
+#View(df_other[df_other$strata_id %in% c("R202214959-01", "R202214959-02"),])
+#View(df_other[df_other$strata_id %in% c("R202214959-01", "R202214959-02"),c("strata_other1", "va_alg")])
+df_other$va_alg[df_other$strata_id == "R202214959-01"] <- "PCVA"
+df_other$va_alg[df_other$strata_id == "R202214959-02"] <- "Medical records"
+# Recombine
+dat <- rbind(df_other, df_multva)
+dat$tempid <- NULL
+nrow(dat) # 557
+
+# Harmonize algorithms listed in va_alg
+unique(dat$va_alg)
+dat$va_alg[grepl("physician-coded", dat$va_alg, ignore.case = TRUE)] <- "PCVA"
+dat$va_alg[grepl("pcva", dat$va_alg, ignore.case = TRUE)] <- "PCVA"
 dat$va_alg[grepl("insilico", dat$va_alg, ignore.case = TRUE)] <- "InSilico"
-dat$va_alg[grepl("method not reported|cannot", dat$va_alg, ignore.case = TRUE)] <- "Not reported"
-dat$va_alg[grepl("va not done|medical records|desath certificates", dat$va_alg, ignore.case = TRUE)] <- "Death certificates or medical records"
-dat$va_alg[is.na(dat$va_alg)] <- "Not reported"
+dat$va_alg[grepl("interva|inter-va", dat$va_alg, ignore.case = TRUE)] <- "InterVA"
+dat$va_alg[grepl("eava", dat$va_alg, ignore.case = TRUE)] <- "EAVA"
+dat$va_alg[grepl("hospital|medical records|death cert|vital reg", dat$va_alg, ignore.case = TRUE)] <- "Death certificates or medical records"
+dat$va_alg[grepl("method not reported", dat$va_alg, ignore.case = TRUE)] <- "Not reported"
+dat$va_alg[grepl("equist", dat$va_alg, ignore.case = TRUE)] <- "Not reported - LiST"
+dat$va_alg[grepl("gbd", dat$va_alg, ignore.case = TRUE)] <- "Not reported - GBD"
+dat$va_alg[grepl("cannot be determined", dat$va_alg, ignore.case = TRUE)] <- "Not reported"
+dat$va_alg[grepl("global network cod", dat$va_alg, ignore.case = TRUE)] <- "Global Network COD Algorithm"
+nrow(subset(dat, is.na(va_alg))) # 0 
 
 # Source of VA algorithm information
 dat$va_alg_src <- "study"
