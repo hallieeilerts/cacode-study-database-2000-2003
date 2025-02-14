@@ -90,6 +90,10 @@ df_batch1 <- datWide %>%
 # View(df_batch5)
 # Identify if there are M, F, and T data points available and keep appropriate one depending on age/sex group.
 
+# Study data points that are excluded from all age groups because they are LiST or GBD
+# !!!! Need to add ref_id "10327" and "10661". These are ref_id. Find the article id in 5-19y data
+v_exclude_article_listgbd <- c("R202210648", "R202210327", "R202210661")
+
 # Ad-hoc duplicate dropping
 if(ageSexSuffix == "00to28d"){
   # strata_id
@@ -124,8 +128,7 @@ if(ageSexSuffix == "01to59m"){
   v_exclude_strataid <- c(v_exclude_strataid, "R202210800-01") # Azithromycin intervention arm of a trial
   v_exclude_strataid <- c(v_exclude_strataid, "R202219200-01", "R202220750-01", "R202220750-02") # RotaSIIL intervention arm of a trial, and duplicated. Dropping duplicate control record as well
   v_exclude_strataid <- c(v_exclude_strataid, "R2022346-02") # Facility record strata
-  
-  # Sometimes easier to exclude entire article
+  # Exclude entire article
   v_exclude_article <- c("R202210827")
 }
 if(ageSexSuffix == "05to09y"){
@@ -140,6 +143,7 @@ if(ageSexSuffix == "05to09y"){
   # Don't exclude PNG 2019 R202210731-02 and R2022229-02. These appear to be two different surveillance sites
   # batch5
   v_exclude_strataid <- c(v_exclude_strataid, "R202225680-04", "R202225680-05") # Dropping sex-specific data points, using sex-combined "R20228-03"
+  # Exclude entire article
   v_exclude_article <- c()
 }
 if(ageSexSuffix == "10to14y"){
@@ -152,18 +156,21 @@ if(ageSexSuffix == "10to14y"){
   v_exclude_strataid <- c(v_exclude_strataid, "PNG-2019-229-R2022229-02-60-168-T") # Appear to be duplicates but one has only "Other" (dropping) and one has diarrhea and "Other" category
   v_exclude_strataid <- c(v_exclude_strataid, "UGA-2016-346-R2022346-03-60-168-T") # Pure duplicate
   #v_exclude_strataid <- c(v_exclude_strataid, "BGD-2012-10645-R202210645-02-1-132-T") # Different methods for COD assignment. Only keep one.
+  # Exclude entire article
   v_exclude_article <- c()
 }
 if(ageSexSuffix == "15to19yF"){
   # !!!! CHANGE TO STRATA ID
   v_exclude_strataid <- c("PNG-2011-132-R2022132-01-144-228-T") # Pure duplicate
   v_exclude_strataid <- c(v_exclude_strataid, "PNG-2019-10731-R202210731-03-180-288-T") # One has CODs aggregated in "Other" category. One has them disaggregated.
+  # Exclude entire article
   v_exclude_article <- c()
 }
 if(ageSexSuffix == "15to19yM"){
   # !!!! CHANGE TO STRATA ID
   v_exclude_strataid <- c("PNG-2011-132-R2022132-01-144-228-T") # Pure duplicate
   v_exclude_strataid <- c(v_exclude_strataid, "PNG-2019-10731-R202210731-03-180-288-T") # One has CODs aggregated in "Other" category. One has them disaggregated.
+  # Exclude entire article
   v_exclude_article <- c()
 }
 
@@ -172,14 +179,16 @@ dat_exc <- datWide[0,]
 if(length(v_exclude_strataid) > 0 |  length(v_exclude_article) > 0){
   dat_exc <- datWide %>%
     filter(strata_id %in% v_exclude_strataid | 
-             article_id %in% v_exclude_article) %>%
-    mutate(exclude_reason = "Duplicate")
+             article_id %in% v_exclude_article |
+              article_id %in% v_exclude_article_listgbd) %>%
+    mutate(exclude_reason = ifelse(article_id %in% v_exclude_article_gbd, "GBD or LiST", "Duplicate"))
 }
 
 # Exclude duplicates
 dat <- dat %>%
   filter(!(strata_id %in% v_exclude_strataid)) %>%
-  filter(!(article_id %in% v_exclude_article))
+  filter(!(article_id %in% v_exclude_article)) %>%
+  filter(!(article_id %in% v_exclude_article_listgbd))
 
 # Tidy
 v_other <- names(dat)[!(names(dat) %in% idVars)]
