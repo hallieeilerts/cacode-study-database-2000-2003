@@ -23,7 +23,7 @@ source("./src/combine-studies-adhoc/set-idvars.R", local = new.env())
 # Clean new data points ---------------------------------------------------
 
 source("./src/process-new-studies/reshape-cod-long.R", local = new.env())
-source("./src/process-new-studies/cod-mapping.R", local = new.env())  # !! non-HMM are dropped from 5-19y. do for under-5?
+source("./src/process-new-studies/cod-mapping.R", local = new.env())
 source("./src/process-new-studies/drop-duplicates.R", local = new.env())
 source("./src/process-new-studies/add-multiple-va-id.R", local = new.env())
 source("./src/process-new-studies/cod-aggregation.R", local = new.env())
@@ -85,6 +85,7 @@ if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){
 # Combining the old and new studies
 source("./src/create-studydb/combine-studydb.R")
 source("./src/create-studydb/drop-duplicates-bw-sysrev.R")
+source("./src/create-studydb/quality-check-and-save.R")
 if(ageSexSuffix %in% c("01to59m")){
   source("./src/create-studydb/drop-malnutrition.R", local=new.env())
 }
