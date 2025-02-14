@@ -1,5 +1,5 @@
 ################################################################################
-#' @description For neonates and postneonates, mapp and aggregate CODs
+#' @description For neonates and postneonates, map and aggregate CODs, round to whole numbers
 #' For 5-19, update names of old CODs
 #' @return Study CODs aggregated by reclassified categories in long format 
 ################################################################################
@@ -74,11 +74,6 @@ if(ageSexSuffix %in% c("00to28d")){
     mutate(Other = totdeaths - totdeaths_noOther) %>% # Recover Other from difference between totdeaths and sum of reported causes
     select(all_of(idVars), "totdeaths", any_of(v_cod_reclass)) # Using any_of because old neonate data doesn't have Other
   
-  # Check that totdeaths is equal to sum of causes
-  totDif <- which(datCOD$totdeaths != apply(datCOD[, paste0(v_cod_reclass)], 1, sum, na.rm = T))
-  if(length(totDif)>0){
-    warning("Sum of causes does not equal totdeaths.")
-  }
 }
 
 if(ageSexSuffix %in% c("01to59m")){
@@ -87,33 +82,82 @@ if(ageSexSuffix %in% c("01to59m")){
   # If we want to extract malnutrition, need to figure out which "other" category to use.
   # To do so, investigate how causes added up to totdeaths.
   # dat %>%
-  #   select(article_id, comment, iso3, malaria, other, other_orig, other_nomaln, 
-  #          injuries, measles, meningitis, neonatal, pneumonia, congenital, malnutrition, hiv, 
-  #          diarrhea, unknown, stillbirth, totdeaths_orig, totdeaths) %>% 
+  #   select(article_id, comment, iso3, malaria, other, other_orig, other_nomaln,
+  #          injuries, measles, meningitis, neonatal, pneumonia, congenital, malnutrition, hiv,
+  #          diarrhea, unknown, stillbirth, totdeaths_orig, totdeaths) %>%
   #   rowwise() %>%
-  #   mutate(test1 = ifelse(is.na(other_nomaln), # there is no other_nomaln, also dont include malnutrition
-  #                         sum(malaria, other, injuries, meningitis, neonatal, pneumonia, congenital, diarrhea,  na.rm = T),
-  #                         sum(malaria, other_nomaln, injuries, meningitis, neonatal, pneumonia, congenital, diarrhea, malnutrition, na.rm = T)
-  #                         )) %>%
+  #   # if there is other_nomaln, calculate total with other_nomaln and other
+  #   # if there is no other_nomaln, calculate total with other and no malnutrition
+  #   mutate(test1 = ifelse(!is.na(other_nomaln),
+  #                         sum(malaria, other_nomaln, injuries, meningitis, neonatal, pneumonia, congenital, diarrhea, malnutrition,  na.rm = T),
+  #                         sum(malaria, other, injuries, meningitis, neonatal, pneumonia, congenital, diarrhea,  na.rm = T)
+  #                         )) %>% 
   #   filter(abs(totdeaths-test1) > 1) %>% View
-  # Some test1 don't add up to totdeaths, but in the "comment" it says this is because "only some causes listed"
+  #
+  # After imposing the above rules, some study CODs still don't add up to totdeaths
+  # For almost all of these, the "comment" says this is because "only some causes listed", "percentages dont add up to 100%"
+  # In these cases, totdeaths is bigger than test1
+  # In one case, there is no comment (article_id == B0101) and totdeaths is smaller than test1
+  #
   # Plan:
-  # 1. If malnutrition is reported and other_nomaln is not, reduce "other" by the amount in malnutrition
-  # 2. If malnurition is reported and other_nomaln is, recode "other_nomaln" as "other"
-  # 3. If totdeaths is not found by adding up...
-  #     malaria, injuries, meningitis, neonatal, pneumonia, congenital, diarrhea, malnutrition, and the new "other"
+  # 1. Apply the above rules to recalculate "other"
+  #  a. If other_nomaln is reported, recode "other_nomaln" as "other"
+  #  b. If other_nomaln is not reported, reduce "other" by the amount in malnutrition
+  #  c. Make sure other does not become negative by b
+  # 2. Calculate totdeaths sum
+  #    malaria, injuries, meningitis, neonatal, pneumonia, congenital, diarrhea, malnutrition, and the new "other"
+  # 3. If totdeaths is larger...
   #     Add residual deaths to other.
-  #     This only happens when there is a "comment" that says "only some causes listed"
-  #     Note that totdeaths does not include hiv, measles, unknown.
+  #     (This happens when there is a "comment" that says "only some causes listed")
+  # 4. If totdeaths is smaller...
+  #     recode totdeaths as the sum of the above.
+  # 5. Make sure other does 
+  # Note: totdeaths currently does not include hiv, measles, unknown.
   #     It thus needs to be recalculated after cause mapping applied
   
+  # # Testing rules
+  # dat %>%
+  #   select(article_id, comment, iso3, malaria, other, other_orig, other_nomaln,
+  #          injuries, measles, meningitis, neonatal, pneumonia, congenital, malnutrition, hiv,
+  #          diarrhea, unknown, stillbirth, totdeaths_orig, totdeaths) %>%
+  #   rowwise() %>%
+  #   mutate(other = ifelse(!is.na(other_nomaln), other_nomaln, other)) %>%
+  #   mutate(other = ifelse(is.na(other_nomaln) & !is.na(malnutrition), other - malnutrition, other)) %>%
+  #   mutate(test1 = sum(malaria, other, injuries, meningitis, neonatal, pneumonia, congenital, diarrhea, malnutrition,  na.rm = T)) %>%
+  #   mutate(other = ifelse(totdeaths-test1 > 1 & !is.na(other), other + (totdeaths - test1), other)) %>%
+  #   mutate(other = ifelse(totdeaths-test1 > 1 & is.na(other), (totdeaths - test1), other)) %>%
+  #   mutate(test2 = sum(malaria, other, injuries, meningitis, neonatal, pneumonia, congenital, diarrhea, malnutrition,  na.rm = T)) %>%
+  #   mutate(totdeaths = ifelse(totdeaths-test1 < -1, test2, totdeaths)) %>%
+  #   filter(abs(totdeaths-test2) > 1 | other < 0) %>% View
+  # # other has very small quantities negative in a few cases. Recode as 0.
+  
   datRecalcOther <- dat %>%
-    mutate(other = ifelse(!is.na(malnutrition) & is.na(other_nomaln), other-malnutrition, other)) %>%
-    mutate(other = ifelse(!is.na(malnutrition) & !is.na(other_nomaln), other_nomaln, other)) %>%
+    mutate(other = ifelse(!is.na(other_nomaln), other_nomaln, other)) %>% 
+    mutate(other = ifelse(is.na(other_nomaln) & !is.na(malnutrition), other - malnutrition, other)) %>% 
+    mutate(other = ifelse(other < 0, 0, other)) %>%
     rowwise() %>%
-    mutate(checksum = sum(malaria, injuries, meningitis, neonatal, pneumonia, congenital, diarrhea, malnutrition, other,  na.rm = T)) %>%
-    mutate(other = ifelse(abs(totdeaths-checksum) > 1, totdeaths - checksum, other)) %>%
-    select(-c(totdeaths_orig, other_nomaln, maln_int, other_int, other_orig, checksum))
+    mutate(test1 = sum(malaria, other, injuries, meningitis, neonatal, pneumonia, congenital, diarrhea, malnutrition,  na.rm = T)) %>%
+    mutate(other = ifelse(totdeaths-test1 > 1 & !is.na(other), other + (totdeaths - test1), other)) %>%
+    mutate(other = ifelse(totdeaths-test1 > 1 & is.na(other), (totdeaths - test1), other)) %>% 
+    mutate(test2 = sum(malaria, other, injuries, meningitis, neonatal, pneumonia, congenital, diarrhea, malnutrition,  na.rm = T)) %>%
+    mutate(totdeaths = ifelse(totdeaths-test2 < -1, test2, totdeaths)) %>%
+    select(-c(totdeaths_orig, other_nomaln, maln_int, other_int, other_orig, test1, test2))
+  
+  # # Check all causes add up to total 
+  # # (allow for some rounding errors by only checking differences bigger than 1. These small differences are corrected later)
+  # datRecalcOther %>%
+  #   mutate(checksum = sum(malaria, injuries, meningitis, neonatal, pneumonia, congenital, diarrhea, malnutrition, other,  na.rm = T)) %>%
+  #   filter(abs(checksum - totdeaths) > 1) %>%
+  #   select(article_id, comment, iso3, malaria, other,
+  #          injuries, measles, meningitis, neonatal, pneumonia, congenital, malnutrition, hiv,
+  #          diarrhea, unknown, stillbirth,  totdeaths, checksum) %>% nrow # 0
+  # # Check no negative causes
+  # datRecalcOther %>%
+  #   mutate(checksum = sum(malaria, injuries, meningitis, neonatal, pneumonia, congenital, diarrhea, malnutrition, other,  na.rm = T)) %>%
+  #   filter(if_any(all_of(c("malaria", "injuries", "meningitis", "neonatal", "pneumonia", "congenital", "diarrhea", "malnutrition", "other")), ~ . < 0)) %>%
+  #   select(article_id, comment, iso3, malaria, other,
+  #        injuries, measles, meningitis, neonatal, pneumonia, congenital, malnutrition, hiv,
+  #        diarrhea, unknown, stillbirth,  totdeaths) %>% nrow # 0
   
   # Rename study COD names to match cod_mapped in COD reclassification key
   # Reshape to COD long
@@ -154,13 +198,9 @@ if(ageSexSuffix %in% c("01to59m")){
       values_from = cod_n,
       values_fn=sum
     ) %>% 
+    select(-comment) %>%
     select(all_of(idVars), "totdeaths", any_of(v_cod_reclass)) # Using any_of because old neonate data doesn't have Other
-  
-  # Check that totdeaths is equal to sum of causes
-  totDif <- which(datCOD$totdeaths != apply(datCOD[, paste0(v_cod_reclass)], 1, sum, na.rm = T))
-  if(length(totDif)>0){
-    warning("Sum of causes does not equal totdeaths.")
-  }
+
 }
 
 # Update COD names to match this round
@@ -188,6 +228,20 @@ if(length(v_missing) > 0){
   }
 }
 
+# Check that totdeaths is equal to sum of causes
+totDif <- which(datCOD$totdeaths != apply(datCOD[, paste0(v_cod_reclass)], 1, sum, na.rm = T))
+if(length(totDif)>0){
+  warning("Sum of causes does not equal totdeaths.")
+}
+
+# Check no negative CODs
+codNeg <- datCOD %>%
+  ungroup() %>%
+  select(any_of(v_cod_reclass)) %>%
+  filter(if_any(everything(), ~ . < 0))
+if(nrow(codNeg)>0){
+  warning("Negative value for COD.")
+}
 
 # Save output -------------------------------------------------------------
 
