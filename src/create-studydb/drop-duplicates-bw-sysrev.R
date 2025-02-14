@@ -127,10 +127,6 @@ dat <- dat %>%
 
 # Save outputs ------------------------------------------------------------
 
-write.csv(dat, paste0("./gen/create-studydb/output/StudyDatabase2023_",ageSexSuffix,"_",format(Sys.Date(), format="%Y%m%d"),".csv"), row.names = FALSE)
+write.csv(dat, paste0("./gen/create-studydb/temp/studies-combined_dup-drop_",ageSexSuffix,".csv"), row.names = FALSE)
 
-# Notes:
-# -CODs can have NA in them
-# -Some study data points are for the same population with different VA algorithms applied.
-# subset(dat, va_mult_ind == 1)
 
