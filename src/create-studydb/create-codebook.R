@@ -48,16 +48,16 @@ dat$scale[dat$variable == "recnr"] <- "integer"
 dat$definition[dat$variable == "id"] <- "Informative ID created from iso3, strata_id, location factor, age, sex. 5-19 data points from 2000-2019 have a slightly different format."
 dat$scale[dat$variable == "id"] <- "string"
 
-dat$definition[dat$variable == "ref_id"] <- "In new studies, this is an integer that identifies each article. In old studies for 5-19, it was a integer to denote a study, or INDEPTH, MDS, MDG, COMSA, PAKVASA, LMM for ad-hoc/VR data. It did not exist in old under-5 studies and was recoded with study_id. "
+dat$definition[dat$variable == "ref_id"] <- "In new studies, this is an integer that identifies each article. In old 5-19 studies, it was a integer to denote a study, or INDEPTH, MDS, MDG, COMSA, PAKVASA, LMM for ad-hoc/VR data. It did not exist in old under-5 studies and was recoded with study_id. "
 dat$scale[dat$variable == "ref_id"] <- "string"
 
-dat$definition[dat$variable == "article_id"] <- "In new studies, begins with R2022. In old studies it was recoded from study_id, and begins with R for articles, integers, or an abbreviation to identify ad-hoc (VASA, HDSS CentreId)."
+dat$definition[dat$variable == "article_id"] <- "In new studies, this begins with R2022. In old studies it was recoded from study_id, and begins with R for articles, and integers or an abbreviation to identify ad-hoc (VASA, HDSS CentreId)."
 dat$scale[dat$variable == "article_id"] <- "string "
 
-dat$definition[dat$variable == "citation"] <- "Article citation for data point. Does not exist in the new studies."
+dat$definition[dat$variable == "citation"] <- "Article citation for data point."
 dat$scale[dat$variable == "citation"] <- "free_text"
 
-dat$definition[dat$variable == "author"] <- "Author citation for data point. Does not exist in the new studies."
+dat$definition[dat$variable == "author"] <- "Author citation for data point. Created from citation."
 dat$scale[dat$variable == "author"] <- "free_text"
 
 dat$definition[dat$variable == "strata_id"] <- "Unique identifier for each data point. In the new studies, this is the article_id plus a number denoting the strata. It did not exist in the old studies but was created from study_id and sid."
@@ -72,7 +72,7 @@ dat$scale[dat$variable == "location_long"] <- "free_text"
 dat$definition[dat$variable == "location_short"] <- "Short location name - no more than 5 words"
 dat$scale[dat$variable == "location_short"] <- "free_text"
 
-dat$definition[dat$variable == "location_fac"] <- "Factor conversion of location_short with first alphabetical name being reference category and value of 1. For the old 5-19y years, nationwide was the reference category, and the factor conversion took place after dropping different studies for different age groups. So the same study in difference age-specific study databases will not necessarily have the same factor value."
+dat$definition[dat$variable == "location_fac"] <- "Factor conversion of location_short with first alphabetical name being reference category and value of 1. For the old 5-19y years, nationwide was the reference category, and the factor conversion took place after dropping different studies for different age groups. So the same study in different age-specific study databases will not necessarily have the same factor value."
 dat$scale[dat$variable == "location_fac"] <- "integer"
 
 dat$definition[dat$variable == "nationalrep"] <- "Indicator for if the study is nationally representative."
