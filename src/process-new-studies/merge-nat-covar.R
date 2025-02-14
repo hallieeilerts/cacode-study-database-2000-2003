@@ -102,7 +102,6 @@ result <- result[order(result$recnr),]
 v_other_col <- names(result)[!(names(result) %in% c(idVars, v_cod))]
 result <- result[,c(idVars, v_cod, v_other_col)]
 
-
 # Save output(s) ----------------------------------------------------------
 
 write.csv(result, paste("./gen/process-new-studies/output/Studies2023_", ageSexSuffix,".csv", sep = ""), row.names = FALSE)
