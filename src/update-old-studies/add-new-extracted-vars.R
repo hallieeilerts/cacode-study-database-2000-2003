@@ -59,15 +59,12 @@ if(ageSexSuffix %in% c("00to28d")){
 }
 if(ageSexSuffix %in% c("01to59m")){
   df_extract <- extract %>%
-    rename_with(
-      ~ case_when(
-        . == "VA.algorithm" ~ "va_alg",
-        . == "va_alg_stat" ~ "va_alg_src",
-        . == "sid" ~ "study_id",
-        TRUE ~ .)) %>%
+    rename(
+      "va_alg" = "VA.algorithm",
+      "va_alg_src" = "va_alg_stat"
+    ) %>%
     select(c("study_id", "va_alg", "va_alg_src", "age_lb_m", "age_ub_m"))
 }
-
 
 df_studies <- studies %>%
   rename_with(
@@ -80,12 +77,12 @@ dat <- merge(df_studies, df_extract, by = "study_id", all.x = TRUE)
 
 # Check if newly extracted information is available for all data points
 #View(dat[,c("study_id", "iso3","citation","VA.algorithm","va_alg_src","age_lb_m.x","age_ub_m.x","age_lb_m.y","age_ub_m.y")])
-#View(subset(dat, is.na(age_ub_m.y))[,c("study_id", "iso3","citation","VA.algorithm","va_alg_src","age_lb_m.x","age_ub_m.x","age_lb_m.y","age_ub_m.y")])
+#View(subset(dat, is.na(age_ub_m.y))[,c("study_id", "iso3","citation","va_alg","va_alg_src","age_lb_m.x","age_ub_m.x","age_lb_m.y","age_ub_m.y")])
+#View(subset(dat, is.na(va_alg))[,c("study_id", "iso3","citation","va_alg","va_alg_src","age_lb_m.x","age_ub_m.x","age_lb_m.y","age_ub_m.y")])
+nrow(subset(dat, is.na(va_alg))) 
+# 3 missing VA information in 1-59m age group
+# Astha identified these as duplicates and therefore didn't bother extracting new information
 
-# Studies with missing extracted information
-# ***I think Astha identified these as duplicates and therefore didn't bother extracting new information
-#View(subset(dat_other, is.na(VA.algorithm))[,c("study_id", "iso3","citation","VA.algorithm","va_alg_src","age_lb_m.x","age_ub_m.x","age_lb_m.y","age_ub_m.y")])
-#View(dat[,c("study_id", "iso3","citation","VA.algorithm","va_alg_src","age_lb_m.x","age_ub_m.x","age_lb_m.y","age_ub_m.y")])
 # Use old information when missing
 if(ageSexSuffix %in% c("01to59m")){
   # This variable was already in the old 1-59m studies but not neonate
@@ -95,16 +92,24 @@ if(ageSexSuffix %in% c("01to59m")){
   dat$age_ub_m[is.na(dat$age_ub_m)] <- dat$age_ub_m.x[is.na(dat$age_ub_m)] 
 }
 
+nrow(subset(dat, is.na(va_alg_src))) # 0 in 1-59m age group
 dat$va_alg_src[is.na(dat$va_alg)] <- "study"
+
+nrow(subset(dat, is.na(va_alg))) # 3 in 1-59m age group
 dat$va_alg[is.na(dat$va_alg)] <- "Not reported"
 
 nrow(dat) == nrow(studies)
 
+if(ageSexSuffix %in% c("00to28d")){
 dat <- dat %>%
   rename_with(
     ~ case_when(
       . == "study_id" ~ "sid", # Convert back to sid for neonate studies
-      TRUE ~ .)) %>%
+      TRUE ~ .)) 
+}
+
+# Remove extra age columns
+dat <- dat %>%
   select(-any_of(c("age_lb_m.x", "age_lb_m.y", "age_ub_m.x", "age_ub_m.y")))
 
 # Save output -------------------------------------------------------------
