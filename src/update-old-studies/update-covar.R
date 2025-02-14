@@ -12,7 +12,9 @@ library(data.table)
 #' Inputs
 source("./src/set-inputs.R")
 ## Old age-specific study database in long format that now has covariate names and scales as pred database
-dat <- read.csv(paste0("./gen/update-old-studies/temp/studies-long_upd-names-scales_", ageSexSuffix, ".csv"))
+if(ageSexSuffix %in% c("00to28d", "01to59m")){
+  dat <- read.csv(paste0("./gen/update-old-studies/temp/studies-long_upd-names-scales_", ageSexSuffix, ".csv"))
+}
 ## Old age-specific study database in long format that now has covariate names and scales as pred database, and study-level pfpr
 if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){ 
   dat <- read.csv(paste0("./gen/update-old-studies/temp/studies-long_merge-pfpr_", ageSexSuffix, ".csv"))
@@ -50,7 +52,7 @@ v_pred_covar <- unique(subset(key_covar, !is.na(pred))$pred)
 
 # Reclassified CODs for this age group (includes Other and Undetermined)
 df_reclass <- subset(key_cod, !is.na(cod_reclass))
-# Exclude "TB" which has been redistributed (only present in 5-9y and 10-14y)
+# Exclude "TB" which has been redistributed (only present in key for 5-9y and 10-14y)
 df_reclass <- subset(df_reclass, cod_reclass != "TB")
 # Exclude "Undetermined" which is used to eliminate studies in cleaning phase
 df_reclass <- subset(df_reclass, cod_reclass != "Undetermined")
