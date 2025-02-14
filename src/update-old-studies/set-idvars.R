@@ -110,12 +110,11 @@ if(ageSexSuffix %in% c("01to59m")){
     rename(article_id = study_id,
            location_long = study_location,
            countryname = country,
-           strata_other1 = other_strata_1,
-           va_alg = VA.algorithm
+           strata_other1 = other_strata_1
     )   %>%
     select(-c(whoregion, age_lb_spec, age_ub_spec,
               pdia, pinj, pmal, pneo, poth, ppne, pcon, pmen, ptot,
-              new_R, comment, BN))
+              new_R, BN))
   
   # Recode long character strings at the end of strata_id (primarily affects India MDS data points)
   #View(dat[,c("recnr", "ref_id", "strata_id", "location_long", "location_short", "iso3")])
@@ -175,17 +174,19 @@ if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF", "15to19yM")){
               VR,  wbinc15, wbreg13, whocode, whoreg6, age_lb, age_ub, idAux)) 
 }
 
+# For 0to28d and 01to59m
 # Harmonize VA algorithms (if present)
 if("va_alg" %in% names(dat)){
-  dat$va_alg[grepl("Physician", dat$va_alg, ignore.case = TRUE)] <- "PCVA"
-  dat$va_alg[grepl("EAVA", dat$va_alg, ignore.case = TRUE)] <- "EAVA"
-  dat$va_alg[grepl("CCVA", dat$va_alg, ignore.case = TRUE)] <- "Other"
-  dat$va_alg[grepl("Other", dat$va_alg, ignore.case = TRUE)] <- "Other"
-  dat$va_alg[grepl("inter", dat$va_alg, ignore.case = TRUE)] <- "InterVA"
-  dat$va_alg[grepl("insilico", dat$va_alg, ignore.case = TRUE)] <- "InSilico"
-  dat$va_alg[grepl("method not reported|cannot", dat$va_alg, ignore.case = TRUE)] <- "Not reported"
-  dat$va_alg[grepl("va not done|medical records|desath certificates", dat$va_alg, ignore.case = TRUE)] <- "Death certificates or medical records"
-  dat$va_alg[is.na(dat$va_alg)] <- "Not reported"
+  
+  unique(dat$va_alg)
+  dat$va_alg[grepl("physician-coded", dat$va_alg, ignore.case = TRUE)] <- "PCVA"
+  dat$va_alg[grepl("pcva", dat$va_alg, ignore.case = TRUE)] <- "PCVA"
+  dat$va_alg[grepl("insilico|insilicio", dat$va_alg, ignore.case = TRUE)] <- "InSilico"
+  dat$va_alg[grepl("interva|inter-va", dat$va_alg, ignore.case = TRUE)] <- "InterVA"
+  dat$va_alg[grepl("hospital|medical records|death cert|vital reg", dat$va_alg, ignore.case = TRUE)] <- "Death certificates or medical records"
+  dat$va_alg[grepl("method not reported", dat$va_alg, ignore.case = TRUE)] <- "Not reported"
+  dat$va_alg[grepl("va not done", dat$va_alg, ignore.case = TRUE)] <- "Death certificates or medical records"
+  nrow(subset(dat, is.na(va_alg))) # 0 
   
   # Source of VA algorithm information (VA algorithm status)
   #unique(dat$va_alg)
@@ -241,7 +242,13 @@ if(nrow(subset(dat, age_ub_m < 0))>0){
 
 # Tidy
 v_other_col <- names(dat)[!(names(dat) %in% idVars)]
-dat <- dat[,c(idVars, v_other_col)]
+if(ageSexSuffix %in% c("01to59m")){
+  # keep comment for 1-59m for harmonize-cod script
+  dat <- dat[,c(idVars, v_other_col, "comment")]
+}else{
+  dat <- dat[,c(idVars, v_other_col)]
+}
+
 dat <- dat[order(dat$id),]
 
 # Save output -------------------------------------------------------------
