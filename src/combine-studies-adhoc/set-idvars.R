@@ -96,6 +96,7 @@ dat$va_alg[grepl("equist", dat$va_alg, ignore.case = TRUE)] <- "Not reported - L
 dat$va_alg[grepl("gbd", dat$va_alg, ignore.case = TRUE)] <- "Not reported - GBD"
 dat$va_alg[grepl("cannot be determined", dat$va_alg, ignore.case = TRUE)] <- "Not reported"
 dat$va_alg[grepl("global network cod", dat$va_alg, ignore.case = TRUE)] <- "Global Network COD Algorithm"
+unique(dat$va_alg)
 nrow(subset(dat, is.na(va_alg))) # 0 
 
 # Source of VA algorithm information
