@@ -179,14 +179,21 @@ if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF", "15to19yM")){
 if("va_alg" %in% names(dat)){
   
   unique(dat$va_alg)
-  dat$va_alg[grepl("physician-coded", dat$va_alg, ignore.case = TRUE)] <- "PCVA"
+  dat$va_alg[dat$article_id == 490 & dat$va_alg == "EAVA and physician coded"] <- "EAVA"
+  dat$va_alg[grepl("physician-coded|physician coded", dat$va_alg, ignore.case = TRUE)] <- "PCVA"
   dat$va_alg[grepl("pcva", dat$va_alg, ignore.case = TRUE)] <- "PCVA"
   dat$va_alg[grepl("insilico|insilicio", dat$va_alg, ignore.case = TRUE)] <- "InSilico"
   dat$va_alg[grepl("interva|inter-va", dat$va_alg, ignore.case = TRUE)] <- "InterVA"
+  dat$va_alg[grepl("eava", dat$va_alg, ignore.case = TRUE)] <- "EAVA"
+  dat$va_alg[grepl("ccva", dat$va_alg, ignore.case = TRUE)] <- "EAVA"
   dat$va_alg[grepl("hospital|medical records|death cert|vital reg", dat$va_alg, ignore.case = TRUE)] <- "Death certificates or medical records"
   dat$va_alg[grepl("method not reported", dat$va_alg, ignore.case = TRUE)] <- "Not reported"
   dat$va_alg[grepl("va not done", dat$va_alg, ignore.case = TRUE)] <- "Death certificates or medical records"
+  unique(dat$va_alg)
   nrow(subset(dat, is.na(va_alg))) # 0 
+  
+  # manual correction
+  
   
   # Source of VA algorithm information (VA algorithm status)
   #unique(dat$va_alg)
