@@ -85,7 +85,7 @@ nrow(dat) # 557
 
 # Harmonize algorithms listed in va_alg
 unique(dat$va_alg)
-dat$va_alg[grepl("physician-coded", dat$va_alg, ignore.case = TRUE)] <- "PCVA"
+dat$va_alg[grepl("physician-coded|physician coded|physician review", dat$va_alg, ignore.case = TRUE)] <- "PCVA"
 dat$va_alg[grepl("pcva", dat$va_alg, ignore.case = TRUE)] <- "PCVA"
 dat$va_alg[grepl("insilico", dat$va_alg, ignore.case = TRUE)] <- "InSilico"
 dat$va_alg[grepl("interva|inter-va", dat$va_alg, ignore.case = TRUE)] <- "InterVA"

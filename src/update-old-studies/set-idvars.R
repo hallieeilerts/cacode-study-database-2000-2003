@@ -180,7 +180,7 @@ if("va_alg" %in% names(dat)){
   
   unique(dat$va_alg)
   dat$va_alg[dat$article_id == 490 & dat$va_alg == "EAVA and physician coded"] <- "EAVA"
-  dat$va_alg[grepl("physician-coded|physician coded", dat$va_alg, ignore.case = TRUE)] <- "PCVA"
+  dat$va_alg[grepl("physician-coded|physician coded|physician review", dat$va_alg, ignore.case = TRUE)] <- "PCVA"
   dat$va_alg[grepl("pcva", dat$va_alg, ignore.case = TRUE)] <- "PCVA"
   dat$va_alg[grepl("insilico|insilicio", dat$va_alg, ignore.case = TRUE)] <- "InSilico"
   dat$va_alg[grepl("interva|inter-va", dat$va_alg, ignore.case = TRUE)] <- "InterVA"
