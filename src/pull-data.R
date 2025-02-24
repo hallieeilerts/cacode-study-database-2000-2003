@@ -5,7 +5,6 @@
 #' Clear environment
 rm(list = ls())
 #' Libraries
-require(readxl)
 #' Inputs
 source("./src/set-inputs.R")
 #' Functions 
@@ -70,6 +69,14 @@ for(i in 1:length(dat_filename)){
             to   = paste0("./data/ad-hoc/",dat_filename[i]))
 }
 
+# Calibrated study data
+fn_initEnvironmentData("study-data-calibrated")
+dat_filename <- list.files(paste0(pathDataWarehouse, "/2000-2023/databases/study-data-calibrated", sep = ""))
+for(i in 1:length(dat_filename)){
+  file.copy(from = paste0(pathDataWarehouse, "/2000-2023/databases/study-data-calibrated/",dat_filename[i], sep = ""),
+            to   = paste0("./data/study-data-calibrated/",dat_filename[i]))
+}
+
 # Single causes database
 fn_initEnvironmentData("single-causes")
 dat_filename <- list.files(paste0(pathDataWarehouse, "/2000-2023/databases/single-causes", sep = ""))
@@ -89,7 +96,6 @@ for(i in 1:length(dat_filename)){
 # Covariate data extraction from DHS
 fn_initEnvironmentData("dhs")
 dat_filename <- list.files(paste0(pathDataWarehouse, "/2000-2023/databases/dhs-covariate-extraction", sep = ""))
-dat_filename <- dat_filename[grepl("long", dat_filename, ignore.case = TRUE)]
 for(i in 1:length(dat_filename)){
   file.copy(from = paste0(pathDataWarehouse, "/2000-2023/databases/dhs-covariate-extraction/",dat_filename[i], sep = ""),
             to   = paste0("./data/dhs/",dat_filename[i]))
