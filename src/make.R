@@ -89,9 +89,11 @@ source("./src/create-studydb/quality-check-and-save.R")
 if(ageSexSuffix %in% c("01to59m")){
   source("./src/create-studydb/drop-malnutrition.R", local=new.env())
 }
-source("./src/create-studydb/create-codebook.R")
+if(ageSexSuffix %in% c("00to28d","01to59m")){
+  source("./src/create-studydb/merge-calibrated-cod.R", local=new.env())
+}
 if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){ 
   source("./src/create-studydb/combine-modinput-deaths.R")
   source("./src/create-studydb/create-modinput-studies.R")
 }
-
+source("./src/create-studydb/create-codebook.R")
