@@ -18,6 +18,9 @@ pred <- read.csv(paste0("./data/prediction-database/", dat_filename, sep = ""))
 dat_filename <- list.files("./data/dhs")
 dat_filename <- dat_filename[grepl("long", dat_filename, ignore.case = TRUE)]
 dhs <- read.csv(paste0("./data/dhs/", dat_filename, sep = ""))
+dat_filename <- list.files("./data/dhs")
+dat_filename <- dat_filename[grepl("wide", dat_filename, ignore.case = TRUE)]
+dhsWide <- read.csv(paste0("./data/dhs/", dat_filename, sep = ""))
 ## Keys 
 # Study-covariate matched with DHS survey
 dat_filename <- list.files("./data/classification-keys")
@@ -44,15 +47,26 @@ studyinfo <- merge(studyinfo, covarinfo, by = "strata_id")
 
 # Merge studies to key with study id/covar/DHS survey match
 df_studies <- merge(studyinfo, key_dhs_var[,c("strata_id","variable","dhs_match")], by = c("strata_id","variable"), all.x = TRUE) # 
-# Check if some countries never match to a dhs survey
+
+# !!!!!! Check if some countries never match to a dhs survey
+if(length(df_studies %>% 
+  mutate(hasdhs = ifelse(!is.na(dhs_match),1,0)) %>%
+  group_by(iso3) %>%
+  mutate(hasdhs = sum(hasdhs)) %>%
+  filter(hasdhs == 0) %>%
+  pull(iso3) %>% unique()) > 0){
+  warning("Check that countries match to a DHS survey where possible")
+}
 df_studies %>% 
   mutate(hasdhs = ifelse(!is.na(dhs_match),1,0)) %>%
   group_by(iso3) %>%
   mutate(hasdhs = sum(hasdhs)) %>%
   filter(hasdhs == 0) %>%
   pull(iso3) %>% unique()
-# 0-28d: all match to a DHS survey
-# 1-59m: CHN and IRN
+# 0-28d: BOL. 
+## There are DHS for Bolivia but it is not in the DHS extraction because the extraction was done before there was adHoc data (and no study data points were from Bolivia). No need to add to the DHS data extraction though because this particular data point is national.
+# 1-59m: BOL, CHN, IRN
+## There are no DHS for China or Iran
 
 # Merge studies to key with study id/DHS survey match/DHS region match
 df_studies <- merge(df_studies, key_dhs_reg[,c("strata_id","dhs_match","admin_level","region_name")], by = c("strata_id","dhs_match"), all.x = TRUE)
@@ -69,6 +83,30 @@ df_dhs$region_name[is.na(df_dhs$region_name) & df_dhs$admin_level == "National"]
 
 # Merge studies with matched dhs survey id, region, covar with actual values from dhs data extraction
 df_covar <- merge(df_studies, df_dhs, by = c("survey_id","admin_level","region_name","variable"), all.x = TRUE)
+
+# Check if any DHS regions didn't merge
+# View(subset(df_covar, !is.na(region_name) & is.na(value)))
+# Sometimes it might be the case that they merged, but there was an NA value in the DHS data
+# Check that the region manually assigned in the region key does exist in that DHS
+if(df_covar %>%
+   filter(!is.na(region_name) & is.na(value)) %>%
+   select(survey_id, region_name) %>%
+   unique() %>%
+   left_join(dhsWide[,c("survey_id", "region_name","iso3")]) %>% nrow > 0){
+  warning("Check that studies matched to DHS regions")
+}
+df_covar %>%
+  filter(!is.na(region_name) & is.na(value)) %>%
+  select(survey_id, region_name) %>%
+  unique() %>%
+  left_join(dhsWide[,c("survey_id", "region_name","iso3")]) #%>% View
+# Any with missing country has an error in manually assigned region
+# If region_name is national, it means that nearby dhs weren't able to calculate certain indicators
+# good to check which ones
+df_covar %>%
+  filter(!is.na(region_name) & is.na(value)) %>%
+  filter(region_name == "XXNATIONALXX")
+# 1-59m: edu_mean_f, edu_mean_mf
 
 # Decision: if it is a national-level study, the value should come from the prediction database and not a national-level DHS data point.
 # Comment out the below line of code in order to use DHS national value (if decision changes)
