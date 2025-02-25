@@ -48,7 +48,7 @@ studyinfo <- merge(studyinfo, covarinfo, by = "strata_id")
 # Merge studies to key with study id/covar/DHS survey match
 df_studies <- merge(studyinfo, key_dhs_var[,c("strata_id","variable","dhs_match")], by = c("strata_id","variable"), all.x = TRUE) # 
 
-# !!!!!! Check if some countries never match to a dhs survey
+# Check if some countries never match to a dhs survey
 if(length(df_studies %>% 
   mutate(hasdhs = ifelse(!is.na(dhs_match),1,0)) %>%
   group_by(iso3) %>%
@@ -67,10 +67,11 @@ df_studies %>%
 ## There are DHS for Bolivia but it is not in the DHS extraction because the extraction was done before there was adHoc data (and no study data points were from Bolivia). No need to add to the DHS data extraction though because this particular data point is national.
 # 1-59m: BOL, CHN, IRN
 ## There are no DHS for China or Iran
+# 5-9y: all match
 
 # Merge studies to key with study id/DHS survey match/DHS region match
 df_studies <- merge(df_studies, key_dhs_reg[,c("strata_id","dhs_match","admin_level","region_name")], by = c("strata_id","dhs_match"), all.x = TRUE)
-# If region_name is missing for the DHS survey match, recode as "XXNationalXX"
+# If region_name is missing for the DHS survey match, recode as "XXNATIONALXX"
 # This is because either (i) we haven't identified the studies dhs region yet, (ii) the study was at the national level
 df_studies$region_name[df_studies$admin_level == "National"] <- "XXNATIONALXX"
 # Rename dhs_match column
@@ -92,21 +93,33 @@ if(df_covar %>%
    filter(!is.na(region_name) & is.na(value)) %>%
    select(survey_id, region_name) %>%
    unique() %>%
-   left_join(dhsWide[,c("survey_id", "region_name","iso3")]) %>% nrow > 0){
+   left_join(dhsWide[,c("survey_id", "region_name","iso3")], by = join_by(survey_id, region_name)) %>% nrow > 0){
   warning("Check that studies matched to DHS regions")
 }
+# First subsetting those with missing values and merging on DHS region key
+# If the iso3 from the DHS region key is missing, there was an error in manually assigned region
 df_covar %>%
   filter(!is.na(region_name) & is.na(value)) %>%
   select(survey_id, region_name) %>%
   unique() %>%
   left_join(dhsWide[,c("survey_id", "region_name","iso3")]) #%>% View
-# Any with missing country has an error in manually assigned region
-# If region_name is national, it means that nearby dhs weren't able to calculate certain indicators
-# good to check which ones
+# If the iso3 from the DHS region key is not missing, it means the region did merge but the value was missing for that region
+# Check regional covar that are missing
+df_covar %>%
+  filter(!is.na(region_name) & is.na(value)) %>%
+  select(survey_id, region_name, variable) %>%
+  unique() %>%
+  left_join(dhsWide[,c("survey_id", "region_name","iso3")]) %>%
+  filter(!is.na(iso3))
+# 5-9y: edu_mean_m, sex_age15_m, sex_age15_mf, ors_f, ors_m, ors_mf, obese_mf
+
+# If region_name is national, it means that the value was missing for that nation
+# Check national covar that are missing
 df_covar %>%
   filter(!is.na(region_name) & is.na(value)) %>%
   filter(region_name == "XXNATIONALXX")
 # 1-59m: edu_mean_f, edu_mean_mf
+# 5-9y: none
 
 # Decision: if it is a national-level study, the value should come from the prediction database and not a national-level DHS data point.
 # Comment out the below line of code in order to use DHS national value (if decision changes)
