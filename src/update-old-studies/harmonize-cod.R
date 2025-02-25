@@ -205,17 +205,15 @@ if(ageSexSuffix %in% c("01to59m")){
 
 # Update COD names to match this round
 if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF", "15to19yM")){
+  
   datCOD <- dat %>% 
     rename_with(
       ~ case_when(
-        . == "OtherCD" ~ "OtherCMPN" ,
-        . == "RTA" ~ "RTI",
-        . == "Other_inj" ~ "OtherInj",
-        . == "Interp_violence" ~ "InterpVio" ,
-        . == "Self_harm" ~ "SelfHarm",
+        . == "OtherCD" ~ "OtherCMPN",
         TRUE ~ .)
     ) %>%
     select(all_of(idVars), "totdeaths", all_of(v_cod_reclass))
+  
 }
 
 # Check that all reclassified COD are reported
@@ -232,6 +230,7 @@ if(length(v_missing) > 0){
 totDif <- which(datCOD$totdeaths != apply(datCOD[, paste0(v_cod_reclass)], 1, sum, na.rm = T))
 if(length(totDif)>0){
   warning("Sum of causes does not equal totdeaths.")
+  View(dat[totDif,])
 }
 
 # Check no negative CODs
@@ -246,5 +245,5 @@ if(nrow(codNeg)>0){
 # Save output -------------------------------------------------------------
 
 # Old model input that now has covariate names and scales as pred database
-write.csv(datCOD , paste0("./gen/update-old-studies/temp/cod-long_harmonized_", ageSexSuffix, ".csv"), row.names = FALSE)
+write.csv(datCOD , paste0("./gen/update-old-studies/temp/cod-wide_harmonized_", ageSexSuffix, ".csv"), row.names = FALSE)
 

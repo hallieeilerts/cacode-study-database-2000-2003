@@ -12,7 +12,7 @@ source("./src/set-inputs.R")
 ## Old study databases with updated id variables to match new studies
 dat <- read.csv(paste0("./gen/update-old-studies/temp/studies_set-id_", ageSexSuffix, ".csv", sep = ""))
 ## Harmonized study CODs in long format
-datCOD <- read.csv(paste0("./gen/update-old-studies/temp/cod-long_harmonized_", ageSexSuffix, ".csv", sep = ""))
+datCOD <- read.csv(paste0("./gen/update-old-studies/temp/cod-wide_harmonized_", ageSexSuffix, ".csv", sep = ""))
 ## Key with matched study and prediction covariate names and scales
 dat_filename <- list.files("./gen/update-old-studies/output")
 dat_filename <- dat_filename[grepl("covariatekey", dat_filename, ignore.case = TRUE)] 
