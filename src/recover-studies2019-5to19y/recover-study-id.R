@@ -2151,6 +2151,14 @@ deaths <- deaths[, !names(deaths) %in% c('Other','Undetermined')]
 cod <- droplevels(cod[!cod %in% c('Other','Undetermined')])
 cod
 
+# Hal note
+# Other remains a column in studies
+# it is not it's own column in deaths, but it is in the "cause" column
+# allowing things to get redistributed to other
+# subset(studies, !is.na(Other))
+# subset(deaths, id == "BGD-1998-31561-49-0-14-B")
+# subset(deaths, id == "GHA-1990-97184-47-0.5-7.5-B")
+
 # EXCLUDE TB (Not modelled!): Assing it to LRI and Other CD
 # if ('TB' %in% cod) {
 #   deaths[deaths$cause == 'TB', 'LRI'] <- 1

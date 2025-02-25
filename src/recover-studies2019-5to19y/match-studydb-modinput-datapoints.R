@@ -44,7 +44,7 @@ subset(check, is.na(source))$reterm
 # Data points in studydb that do not have an id in the model input
 # There should be none
 subset(check, is.na(sid))
-# 15019m has these two extra data points
+# 15-19m has these two extra data points
 # ZAF-2003-37423-10-15-19-M
 # ZAF-2012-37423-10-15-19-M 
 
