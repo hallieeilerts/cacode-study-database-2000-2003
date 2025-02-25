@@ -16,7 +16,7 @@ fn_aggCODbySex <- function(DAT, KEY_COD_RECLASS){
   #' @return Data frame with aggregated data points where called for 
   
   # For testing function
-  #DAT <- datWide
+  #DAT <- subset(datWide, strata_id %in% c("adHoc2022HEALSL2023_SLE03", "adHoc2022HEALSL2023_SLE04"))
   #KEY_COD_RECLASS <- key[,c("cod_reclass","cod_level2")]
   
   # Rename COD reclassification columns
@@ -27,8 +27,7 @@ fn_aggCODbySex <- function(DAT, KEY_COD_RECLASS){
                       DAT$iso3, 
                       DAT$year_mid, 
                       DAT$age_lb_m, DAT$age_ub_m, sep = '-')
-  
- 
+
   # Identify records that have male and female data point reported for same study
   dat_prep <- DAT %>% 
     group_by(idtemp) %>%

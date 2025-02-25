@@ -28,7 +28,7 @@ v_cod_reclass <- unique(subset(key, !is.na(cod_reclass))$cod_reclass)
 # Exclude "Undetermined" because any deaths attributed to Undetermined have been excluded in exclude-by-size
 v_cod_reclass <- v_cod_reclass[!(v_cod_reclass %in% c("TB", "Undetermined"))]
 v_cod_reclass <- v_cod_reclass[!is.na(v_cod_reclass)]
-# Exclude "Other" from vector further down in this script
+# For 5-19, exclude "Other" from vector further down in this script
 
 deaths <- dat
 par <- c("recnr", "id", "sex", "totdeaths", "cause", "n")
@@ -125,9 +125,12 @@ table(M)
 # I previously had an issue with some values not being 1.
 # This was because certain CODs were missing in various studies and there was no "Other" in the cause column to map them to.
 # I fixed this by adding back Pancho's code in "manage-other" that I had commented out. 
+if(!(all(M ==1))){
+  warning("Error in reclassification matrix.")
+}
 
 # Reported COD
-# May include Other, that is not modeled for 5-19. It is modeled for under-5. (I think)
+# May include Other, which is not modeled for 5-19. It is modeled for under-5. (I think)
 unique(deaths$cause)
 unique(deaths$cause)[which(!unique(deaths$cause) %in% v_cod_reclass)]
 # line 2106 in Pancho's code in VAMCM-DataCleaning009
