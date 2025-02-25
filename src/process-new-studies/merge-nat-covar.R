@@ -64,6 +64,14 @@ if(nrow(subset(df_all, is.na(value))) > 0){
 if(nrow(subset(df_all, is.na(source))) > 0){
   warning("covariate sources are missing")
 }
+# check if any covariates are negative
+if(nrow(subset(df_all, !is.na(value) & value < 0)) > 0){
+  warning("covariate values are missing")
+}
+# check if any covariates are infinite
+if(nrow(subset(df_all, is.infinite(value))) > 0){
+  warning("covariate values are missing")
+}
 
 # Reshape covariate values wide
 wideVal <- df_all %>%
