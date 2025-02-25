@@ -89,14 +89,13 @@ df_batch1 <- datWide %>%
 #   arrange(iso3, totdeaths)
 # View(df_batch5)
 # Identify if there are M, F, and T data points available and keep appropriate one depending on age/sex group.
+# e.g., For 5-9y, if all were available, keep T. Note that if only M and F were available, these will be collapsed at a later stage.
 
 # Study data points that are excluded from all age groups because they are LiST or GBD
 # !!!! Need to add ref_id for "10327" and "10661". These are ref_id. Find the article id in 5-19y data
 v_exclude_article_listgbd <- c("R202210648", "R202210327", "R202210661", "R202223055")
 
-
-
-# Ad-hoc duplicate dropping
+# Duplicate dropping
 if(ageSexSuffix == "00to28d"){
   # strata_id
   # batch1
@@ -141,8 +140,7 @@ if(ageSexSuffix == "05to09y"){
   v_exclude_strataid <- c(v_exclude_strataid, "R2022346-03") # R2022346-03 is a duplicate of R202210582-02
   v_exclude_strataid <- c(v_exclude_strataid, "R202224909-04") # R202224909-04 is a duplicate of R202210342-04 and totdeaths is incorrect for one being excluded
   v_exclude_strataid <- c(v_exclude_strataid, "R202224909-02") # R202224909-02 is duplicate of R202210342-02 and totdeaths is incorrect for one being excluded
-  # batch2
-  # Don't exclude PNG 2019 R202210731-02 and R2022229-02. These appear to be two different surveillance sites
+  v_exclude_strataid <- c(v_exclude_strataid, "R202210731-02") # R202210731-02 and R2022229-02 are from two different papers. They are the same 5-14y data point for PNG in 2018-2020 but with the CODs aggregated differently. keeping R2022229-02 because it has better cause aggregation for 5-9y. 
   # batch5
   v_exclude_strataid <- c(v_exclude_strataid, "R202225680-04", "R202225680-05") # Dropping sex-specific data points, using sex-combined "R20228-03"
   # Exclude entire article
@@ -154,7 +152,7 @@ if(ageSexSuffix == "10to14y"){
   v_exclude_strataid <- c(v_exclude_strataid, "KEN-2013-26081-R202226081-04-60-168-T") # Pure duplicate
   v_exclude_strataid <- c(v_exclude_strataid, "MDG-2014-24967-R202224967-04-120-168-T") # Pure duplicate, keep the one that reports malaria
   v_exclude_strataid <- c(v_exclude_strataid, "SLE-2019-8-R20228-03-60-168-T") # Sex-combined data point, when we also have sex-specific data points
-  v_exclude_strataid <- c(v_exclude_strataid, "PNG-2011-132-R2022132-01-144-228-T") # Pure duplicate
+  v_exclude_strataid <- c(v_exclude_strataid, "PNG-2011-132-R2022132-01-144-228-T") # !! Pure duplicate, R2022132-01 and R202224933-01
   v_exclude_strataid <- c(v_exclude_strataid, "PNG-2019-229-R2022229-02-60-168-T") # Appear to be duplicates but one has only "Other" (dropping) and one has diarrhea and "Other" category
   v_exclude_strataid <- c(v_exclude_strataid, "UGA-2016-346-R2022346-03-60-168-T") # Pure duplicate
   #v_exclude_strataid <- c(v_exclude_strataid, "BGD-2012-10645-R202210645-02-1-132-T") # Different methods for COD assignment. Only keep one.
