@@ -21,6 +21,16 @@ if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){
 }
 ################################################################################
 
+# check empty strings
+any(dat == "", na.rm = TRUE)
+# check cols with empties
+cols_with_empty <- colnames(dat)[colSums(dat == "", na.rm = TRUE) > 0]
+#View(dat[,cols_with_empty])
+# check blank spaces
+any(trimws(dat) == "", na.rm = TRUE)
+# Replace empty strings or spaces of any size with NA
+dat[dat == "" | grepl("^\\s*$", dat)] <- NA
+
 # Rename columns
 # Remove unnecessary columns
 
@@ -40,6 +50,7 @@ if(ageSexSuffix %in% c("00to28d")){
            year_mid = year,
     ) %>%
     select(-c(sid, natrep, studyid_1, period, per_early, per_late, regSSA, regSA, premvslbw, first, last, N)) 
+  # remove any column that is not in idVars, totdeaths, a COD, a covariate, a covariate source
   
   # study location
   dat$location_char <- dat$location_long
@@ -47,7 +58,6 @@ if(ageSexSuffix %in% c("00to28d")){
   dat$location_char_n <- lengths(gregexpr("\\W+", dat$location_char))
   dat$location_char_capwords <- unlist(lapply(str_extract_all(dat$location_char, "\\b[A-Z]\\w+"), function(x) x[1]))
   dat$location_short[dat$location_char_n > 4 & !is.na(dat$location_char_capwords)] <- dat$location_char_capwords[dat$location_char_n > 4 & !is.na(dat$location_char_capwords)]
-  
   
 }
 
@@ -115,6 +125,7 @@ if(ageSexSuffix %in% c("01to59m")){
     select(-c(whoregion, age_lb_spec, age_ub_spec,
               pdia, pinj, pmal, pneo, poth, ppne, pcon, pmen, ptot,
               new_R, BN))
+  # remove any column that is not in idVars, totdeaths, a COD, a covariate, a covariate source
   
   # Recode long character strings at the end of strata_id (primarily affects India MDS data points)
   #View(dat[,c("recnr", "ref_id", "strata_id", "location_long", "location_short", "iso3")])
@@ -162,16 +173,18 @@ if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF", "15to19yM")){
     mutate(recnr = 1:n(),
            age_lb_m = age_lb*12,
            age_ub_m = age_ub*12,
-           sex = ifelse(sex == "B", substr(sexLabels[1],1,1), sex),
-           strata_id = paste(study_id, sid, sep = "-")) %>% # must be unique. study_id is not.
+           strata_id = ifelse(!is.na(study_id), paste(study_id, sid, sep = "-"), sid),
+           citation = ifelse(!is.na(title), paste(title, citation, sep = ", "), citation)) %>% # must be unique. study_id is not.
     rename(ref_id = Refid,
            article_id = study_id,
            location_long = location_char,
            countryname = whoname,
            year_mid = year,
     ) %>%
-    select(-c(location_char_n, location_char_capwords, nation_rep, RecNr, strata_ur, comment,new_R,
-              VR,  wbinc15, wbreg13, whocode, whoreg6, age_lb, age_ub, idAux)) 
+    select(-c(sid, location_char_n, location_char_capwords, location, nation_rep, RecNr, strata_ur, comment, new_R,
+              VR,  wbinc15, wbreg13, whocode, whoreg6, whoreg7, age_lb, age_ub, idAux,
+              title, MR0_4, MR0_14, MR10_14, MR15_19, MR15_24, MR5_9, MR5_14, incl197)) 
+    # remove any column that is not in idVars, totdeaths, a COD, a covariate, a covariate source
 }
 
 # For 0to28d and 01to59m
@@ -191,9 +204,6 @@ if("va_alg" %in% names(dat)){
   dat$va_alg[grepl("va not done", dat$va_alg, ignore.case = TRUE)] <- "Death certificates or medical records"
   unique(dat$va_alg)
   nrow(subset(dat, is.na(va_alg))) # 0 
-  
-  # manual correction
-  
   
   # Source of VA algorithm information (VA algorithm status)
   #unique(dat$va_alg)
@@ -250,7 +260,7 @@ if(nrow(subset(dat, age_ub_m < 0))>0){
 # Tidy
 v_other_col <- names(dat)[!(names(dat) %in% idVars)]
 if(ageSexSuffix %in% c("01to59m")){
-  # keep comment for 1-59m for harmonize-cod script
+  # keep "comment" column for 1-59m for use in harmonize-cod.R
   dat <- dat[,c(idVars, v_other_col, "comment")]
 }else{
   dat <- dat[,c(idVars, v_other_col)]

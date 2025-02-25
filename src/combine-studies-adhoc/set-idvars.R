@@ -14,6 +14,14 @@ source("./src/set-inputs.R")
 dat <- read.csv(paste0("./gen/combine-studies-adhoc/temp/studies_add-ad-hoc.csv", sep = ""))
 ################################################################################
 
+# check empty strings
+any(dat == "", na.rm = TRUE)
+# check blank spaces
+any(trimws(dat) == "", na.rm = TRUE)
+# Replace empty strings or spaces of any size with NA
+dat[dat == "" | grepl("^\\s*$", dat)] <- NA
+
+
 # Generate age variables in months
 dat <- dat %>%
   mutate(age_lb = as.numeric(age_lb),
@@ -135,4 +143,4 @@ dat <- dat[order(dat$id),]
 write.csv(dat, paste0("./gen/combine-studies-adhoc/output/StudiesAdHoc2023.csv"), row.names = FALSE)
 
 # Create one for StudyData-DHS region matching
-# write.csv(dat, paste0("./gen/combine-studies-adhoc/output/StudiesAdHoc2023","_",format(Sys.Date(), format="%Y%m%d"),".csv"), row.names = FALSE)
+#write.csv(dat, paste0("./gen/combine-studies-adhoc/output/StudiesAdHoc2023","_",format(Sys.Date(), format="%Y%m%d"),".csv"), row.names = FALSE)
