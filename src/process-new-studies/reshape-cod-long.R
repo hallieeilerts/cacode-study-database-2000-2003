@@ -10,10 +10,6 @@ require(tidyverse)
 source("./src/set-inputs.R")
 ## Study CODs with wide columns for cod number, proportion, rate
 dat <- read.csv(paste0("./gen/combine-studies-adhoc/output/StudiesAdHoc2023.csv", sep = ""))
-## Key with model classification for hmm/lmm countries
-dat_filename <- list.files("./data/classification-keys")
-dat_filename <- dat_filename[grepl("modelclass", dat_filename, ignore.case = TRUE)]
-key <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
 ################################################################################
 
 n_cod_col <- max(as.numeric(gsub("\\D", "", names(dat)[grepl("cod", names(dat))])), na.rm = T)

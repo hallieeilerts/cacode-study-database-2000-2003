@@ -15,17 +15,21 @@ dat_filename <- list.files("./data/classification-keys")
 dat_filename <- dat_filename[grepl("studycausemapping", dat_filename, ignore.case = TRUE)]
 dat_filename <- tail(sort(dat_filename),1) # Most recent
 key <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
+## Key with model classification for hmm/lmm countries
+dat_filename <- list.files("./data/classification-keys")
+dat_filename <- dat_filename[grepl("modelclass", dat_filename, ignore.case = TRUE)]
+key_modclass <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
 ################################################################################
 
 # !!! NOTE: CHECK IF DAVID AND JAMIE WANT THIS APPLIED TO NEONATES AND POSTNEONATES
 if(ageSexSuffix %in% c("05to09y", "10to14y", "15to19yF", "15to19yM")){
   # Remove data points from COUNTRIES NOT VA
-  v_keep <- subset(key, Group %in% c('HMM/LMM', 'HMM'))$ISO3
+  v_keep <- subset(key_modclass, Group %in% c('HMM/LMM', 'HMM'))$ISO3
   dat <- subset(dat, iso3 %in% v_keep)
-  nrow(dat) # 252
+  nrow(dat)
 }
 
-length(unique(dat$article_id)[grepl("adhoc", unique(dat$article_id), ignore.case = TRUE)]) # 230
+length(unique(dat$article_id)[grepl("adhoc", unique(dat$article_id), ignore.case = TRUE)]) # 252
 
 # Subset data points applicable to age group being processed
 if(ageSexSuffix %in% "00to28d"){
