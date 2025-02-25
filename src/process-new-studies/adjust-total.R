@@ -39,14 +39,6 @@ dat$totdeaths[totSmall] <- apply(dat[totSmall, paste0(v_cod_reclass)], 1, sum, n
 totSmall <- which(dat$totdeaths - apply(dat[, paste0(v_cod_reclass)], 1, sum, na.rm = T) < -.01)
 length(totSmall) == 0
 
-# # !!!! I think this step is unnecessary.
-# # RECLASSIFY CAUSES OF DEATH
-# # Other dumpster
-# dat$OtherCMPN[which(dat$OtherCMPN == 0)] <- NA
-# dat$OtherNCD[which(dat$OtherNCD == 0)] <- NA
-# dat$OtherInj[which(dat$OtherInj == 0)] <- NA
-# dat$Other[which(dat$Other == 0)] <- NA
-
 # Adjust OTHER when total deaths are bigger than sum of COD
 totLarge <- which(dat$totdeaths - apply(dat[, paste0(v_cod_reclass)], 1, sum, na.rm = T) > .01)
 length(totLarge)
