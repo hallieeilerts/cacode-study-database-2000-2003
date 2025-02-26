@@ -24,7 +24,7 @@ dat <- dat %>%
 dat$citation <- stri_trans_general(dat$citation, "Latin-ASCII")
 
 # Create author column
-dat$author = gsub("(.+?)(\\,.*)", "\\1", dat$citation)
+dat$author <- gsub("(.+?)(\\,.*)", "\\1", dat$citation)
 dat$author[grepl("population-based", dat$author, ignore.case = TRUE)] <- NA
 
 # Keep necessary columns

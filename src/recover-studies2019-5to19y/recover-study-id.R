@@ -9,6 +9,7 @@
 rm(list = ls())
 #' Libraries
 require(readstata13)
+library(stringi) # removing accents of letters
 #' Inputs
 source("./src/set-inputs.R")
 ## Old study database
@@ -2421,6 +2422,12 @@ studies$Year <- NULL
 
 if(ageSexSuffix == "15to19yF"){ studies <- subset(studies, sex %in% c('F', 'B')) }
 if(ageSexSuffix == "15to19yM"){ studies <- subset(studies, sex %in% c('M', 'B'))}
+
+# remove accents/special characters before saving to csv
+studies$whoname <- stri_trans_general(studies$whoname, "Latin-ASCII")
+studies$citation <- stri_trans_general(studies$citation, "Latin-ASCII")
+studies$author <- stri_trans_general(studies$author, "Latin-ASCII")
+studies$location_char <- stri_trans_general(studies$location_char, "Latin-ASCII")
 
 # RecNr is 1:nrow of the study databse
 # id is the id created by Pancho that matches the model inputs

@@ -8,6 +8,7 @@ rm(list = ls())
 require(readxl)
 require(tidyverse)
 require(countrycode)
+require(stringi)
 #' Inputs
 source("./src/set-inputs.R")
 ## Ad-hoc data
@@ -23,6 +24,15 @@ names(adhoc)[!(names(adhoc) %in% names(dat))]
 
 # studies column names that are not in ad-hoc
 names(dat)[!(names(dat) %in% names(adhoc))]
+
+# remove accents/special characters before saving to csv
+dat <- dat %>%
+  mutate(countryname = stri_trans_general(countryname, "Latin-ASCII"),
+         citation = stri_trans_general(citation, "Latin-ASCII"),
+         author = stri_trans_general(author, "Latin-ASCII"),
+         location_short = stri_trans_general(location_short, "Latin-ASCII"),
+         location_long = stri_trans_general(location_long, "Latin-ASCII"))
+
 
 # Create age group in months variable
 

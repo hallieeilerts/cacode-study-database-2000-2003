@@ -7,6 +7,7 @@ rm(list = ls())
 #' Libraries
 require(readxl)
 require(tidyverse)
+require(stringi)
 #' Inputs
 source("./src/set-inputs.R")
 ## Information on study locations and whether study is nationally representative
@@ -25,6 +26,10 @@ dat <- dat %>%
          location_short = `study loc`, 
   ) %>%
   select(c(strata_id, ref_id, location_short, nationalrep))
+
+# remove accents/special characters before saving to csv
+dat <- dat %>%
+  mutate(location_short = stri_trans_general(location_short, "Latin-ASCII"))
 
 # Save output -------------------------------------------------------------
 

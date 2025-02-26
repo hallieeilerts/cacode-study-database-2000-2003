@@ -9,7 +9,7 @@ library(tidyverse)
 library(data.table)
 library(stringr)
 library(readxl)
-library(stringi) # removing accents of letters
+library(stringi)
 library(readstata13)
 #' Inputs
 source("./src/set-inputs.R")
@@ -52,26 +52,39 @@ if(ageSexSuffix %in% c("00to28d")){
         TRUE ~ .)) %>%
     select(c("study_id", "va_alg", "va_alg_src", "age_lb_m", "age_ub_m", "citation", "author", "location_long"))
   
+  # remove special characters
   df_extract$author[grepl("http", df_extract$author, ignore.case = TRUE)] <- NA
   df_extract$author <- stri_trans_general(df_extract$author, "Latin-ASCII")
   df_extract$citation <- stri_trans_general(df_extract$citation, "Latin-ASCII")
   
+  
+  df_studies <- studies %>%
+    mutate(country = stri_trans_general(country, "Latin-ASCII")) %>%
+    rename_with(
+      ~ case_when(
+        . == "sid" ~ "study_id",
+        TRUE ~ .)) %>%
+    mutate(study_id = trimws(study_id))
+  
 }
+
 if(ageSexSuffix %in% c("01to59m")){
+  
   df_extract <- extract %>%
     rename(
       "va_alg" = "VA.algorithm",
       "va_alg_src" = "va_alg_stat"
     ) %>%
     select(c("study_id", "va_alg", "va_alg_src", "age_lb_m", "age_ub_m"))
+  
+  # remove accents/special characters before saving to csv
+  df_studies <- studies %>%
+    mutate(country = stri_trans_general(country, "Latin-ASCII"),
+           author = stri_trans_general(author, "Latin-ASCII"),
+           citation = stri_trans_general(citation, "Latin-ASCII")) %>%
+    mutate(study_id = trimws(study_id))
+  
 }
-
-df_studies <- studies %>%
-  rename_with(
-    ~ case_when(
-      . == "sid" ~ "study_id",
-      TRUE ~ .)) %>%
-  mutate(study_id = trimws(study_id))
 
 dat <- merge(df_studies, df_extract, by = "study_id", all.x = TRUE)
 

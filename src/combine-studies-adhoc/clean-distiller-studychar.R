@@ -8,6 +8,7 @@ rm(list = ls())
 require(readxl)
 require(tidyverse)
 require(countrycode)
+require(stringi)
 #' Inputs
 source("./src/set-inputs.R")
 ## Studies and their identifying columns from 2000-2023 systematic review
@@ -26,6 +27,8 @@ dat$iso3[dat$country == "TAN"] <- "TZA"
 dat$iso3[dat$country == "TMP"] <- "TLS"
 dat$iso3[dat$country == "ZAM"] <- "ZMB"
 dat$countryname <- countrycode(dat$iso3, origin = "iso3c", destination = "country.name")
+# remove accents/special characters before saving to csv
+dat$countryname <- stri_trans_general(dat$countryname, "Latin-ASCII")
 # Delete original country column
 dat <- dat[!(names(dat) %in% "country")]
 
