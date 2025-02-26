@@ -17,10 +17,10 @@ if(ageSexSuffix == "15to19yM"){load("./data/model-inputs-old/20210212-Data15to19
 ################################################################################
 
 # Rename CODs in old model input
-names(deaths)[names(deaths) == 'OtherCD'] <- 'OtherCMPN'
-names(deaths)[names(deaths) == 'RTA'] <- 'RTI'
-names(deaths)[names(deaths) == 'Other_inj'] <- 'OtherInj'
-names(deaths)[names(deaths) == 'Self_harm'] <- 'SelfHarm'
+names(deaths)[names(deaths) == "OtherCD"] <- "OtherCMPN"
+names(deaths)[names(deaths) == "RTA"] <- "RTI"
+names(deaths)[names(deaths) == "Other_inj"] <- "OtherInj"
+names(deaths)[names(deaths) == "Self_harm"] <- "SelfHarm"
 names(deaths)[names(deaths) == "Interp_violence"] <- "InterpVio"
 deaths$cause[deaths$cause == "OtherCD"] <- "OtherCMPN"
 deaths$cause[deaths$cause == "RTA"] <- "RTI"

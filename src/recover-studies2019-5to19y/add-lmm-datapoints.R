@@ -40,8 +40,10 @@ v_lmm <- studies$id[!(studies$id %in% studydb$id)]
 df_lmm_id <- subset(studies, id %in% v_lmm)[,c("sid", "id", "reterm", "totdeaths")]
 df_lmm_dth <- subset(deaths, id %in% v_lmm)
 
-# Reshape deaths wide from cause column in model object
-# Make sure names match studydb
+# Reshape deaths model input wide from cause column
+# Make sure COD names match studydb
+# Old studydb generated in recover-study-id has updated COD names except for OtherCMPN which is OtherCD
+# OtherCD gets updated in harmonize-cod
 df_lmm_dthWide <- df_lmm_dth %>% 
   select(sid, id, cause, n) %>%
   pivot_wider(
@@ -52,8 +54,8 @@ df_lmm_dthWide <- df_lmm_dth %>%
     ~ case_when(
       . == "RTA" ~ "RTI",
       . == "Other_inj" ~ "OtherInj",
-      #. == "Interp_violence" ~ "InterpVio" , !!!! DO THIS HERE? OR IN HARMONIZE-COD?
-      #. == "Self_harm" ~ "SelfHarm",
+      . == "Interp_violence" ~ "InterpVio" ,
+      . == "Self_harm" ~ "SelfHarm",
       TRUE ~ .)
   )
 
