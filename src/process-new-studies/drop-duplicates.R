@@ -26,13 +26,13 @@ datWide <- dat %>%
 # Do not have two different VA algorithms.
 # Are not an ad-hoc data point. We compiled ad-hoc data and should not have any duplicates.
 # Identify duplicates to drop and add to v_exclude_strataid or v_exclude_article
-df_batch1 <- datWide %>%
-  group_by(iso3, year_start, year_end, sex, totdeaths) %>%
-  mutate(N = n(),
-         va_alg_N = n_distinct(va_alg)) %>%
-  mutate(adhoc = grepl("adhoc",article_id,ignore.case = TRUE)) %>%
-  filter(N > 1 & va_alg_N == 1 & adhoc == FALSE) %>%
-  arrange(iso3, totdeaths)
+# df_batch1 <- datWide %>%
+#   group_by(iso3, year_start, year_end, sex, totdeaths) %>%
+#   mutate(N = n(),
+#          va_alg_N = n_distinct(va_alg)) %>%
+#   mutate(adhoc = grepl("adhoc",article_id,ignore.case = TRUE)) %>%
+#   filter(N > 1 & va_alg_N == 1 & adhoc == FALSE) %>%
+#   arrange(iso3, totdeaths)
 # View(df_batch1)
 # df_batch2 <- datWide %>%
 #   filter(!(strata_id %in% v_exclude_strataid)) %>%
@@ -147,15 +147,15 @@ if(ageSexSuffix == "05to09y"){
   v_exclude_article <- c()
 }
 if(ageSexSuffix == "10to14y"){
-  # !!!! CHANGE TO STRATA ID
-  v_exclude_strataid <- c("IND-2014-24909-R202224909-04-60-168-F", "IND-2014-24909-R202224909-02-60-168-M")
-  v_exclude_strataid <- c(v_exclude_strataid, "KEN-2013-26081-R202226081-04-60-168-T") # Pure duplicate
-  v_exclude_strataid <- c(v_exclude_strataid, "MDG-2014-24967-R202224967-04-120-168-T") # Pure duplicate, keep the one that reports malaria
-  v_exclude_strataid <- c(v_exclude_strataid, "SLE-2019-8-R20228-03-60-168-T") # Sex-combined data point, when we also have sex-specific data points
-  v_exclude_strataid <- c(v_exclude_strataid, "PNG-2011-132-R2022132-01-144-228-T") # !! Pure duplicate, R2022132-01 and R202224933-01
-  v_exclude_strataid <- c(v_exclude_strataid, "PNG-2019-229-R2022229-02-60-168-T") # Appear to be duplicates but one has only "Other" (dropping) and one has diarrhea and "Other" category
-  v_exclude_strataid <- c(v_exclude_strataid, "UGA-2016-346-R2022346-03-60-168-T") # Pure duplicate
-  #v_exclude_strataid <- c(v_exclude_strataid, "BGD-2012-10645-R202210645-02-1-132-T") # Different methods for COD assignment. Only keep one.
+  v_exclude_strataid <- c("R202224909-02", "R202224909-04") # R202224909-02 and R202224909-04 are duplicates of R202210342-02 and R202210342-04
+  v_exclude_strataid <- c(v_exclude_strataid,"R202226081-04") # R202226081-04 is a duplicate of R202210243-04 # "KEN 2013
+  v_exclude_strataid <- c(v_exclude_strataid, "R2022111-04") # R2022111-04 is a duplicate of R202224967-04 and reports malaria  # MDG 2014
+  v_exclude_strataid <- c(v_exclude_strataid, "R2022132-01") # R2022132-01 is a duplicate of R202224933-01 # PNG 2011
+  v_exclude_strataid <- c(v_exclude_strataid, "R202210582-02") # R202210582-02 is a duplicate of R2022346-03 # UGA 2016
+  v_exclude_strataid <- c(v_exclude_strataid, "R202210731-02") # R202210731-02 and R2022229-02 are from two different papers. They are the same 5-14y data point for PNG in 2018-2020 but with the CODs aggregated differently. keeping R2022229-02 because it has better cause aggregation for 5-9y. 
+  # batch2 has India adhoc data points that are for different regions
+  # batch5
+  v_exclude_strataid <- c(v_exclude_strataid, "R202225680-04", "R202225680-05") # Dropping sex-specific data points, using sex-combined "R20228-03"
   # Exclude entire article
   v_exclude_article <- c()
 }

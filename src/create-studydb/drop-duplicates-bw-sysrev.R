@@ -71,6 +71,7 @@ nrow(df_batch1)
 #   mutate(tempid = ifelse(ageSexSuffix == "01to59m", paste0(iso3, year_start, year_end, sex, age_lb_m, age_ub_m, round(LRI)), NA)) %>%
 #   mutate(tempid = ifelse(ageSexSuffix == "00to28d", paste0(iso3, year_start, year_end, sex, age_lb_m, age_ub_m, round(Preterm), round(LRI)), tempid)) %>%
 #   mutate(tempid = ifelse(ageSexSuffix == "05to09y", paste0(iso3, year_start, year_end, sex, age_lb_m, age_ub_m, round(Drowning), round(Diarrhoeal)), tempid)) %>%
+#   mutate(tempid = ifelse(ageSexSuffix == "10to14y", paste0(iso3, year_start, year_end, sex, age_lb_m, age_ub_m, round(RTI), round(LRI)), tempid)) %>%
 #   group_by(tempid) %>%
 #   mutate(N = n(),
 #          round_N = n_distinct(round)) %>%
@@ -84,6 +85,7 @@ nrow(df_batch1)
 #   mutate(tempid = ifelse(ageSexSuffix == "01to59m", paste0(iso3, year_start, year_end, sex, age_lb_m, age_ub_m, round(Diarrhoeal)), NA)) %>%
 #   mutate(tempid = ifelse(ageSexSuffix == "00to28d", paste0(iso3, year_start, year_end, sex, age_lb_m, age_ub_m, round(Preterm), round(LRI)), tempid)) %>%
 #   mutate(tempid = ifelse(ageSexSuffix == "05to09y", paste0(iso3, year_start, year_end, sex, age_lb_m, age_ub_m, round(LRI), round(Congenital)), tempid)) %>%
+#   mutate(tempid = ifelse(ageSexSuffix == "10to14y", paste0(iso3, year_start, year_end, sex, age_lb_m, age_ub_m, round(OtherCMPN), round(Neoplasms)), tempid)) %>%
 #   group_by(tempid) %>%
 #   mutate(N = n(),
 #          round_N = n_distinct(round)) %>%
