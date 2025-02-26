@@ -45,8 +45,6 @@ dat_filename <- tail(sort(dat_filename),1) # Most recent
 key_cod <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
 ################################################################################
 
-## Useful vectors
-
 # List of covariates in pred database
 v_pred_covar <- unique(subset(key_covar, !is.na(pred))$pred)
 
@@ -59,8 +57,7 @@ df_reclass <- subset(df_reclass, cod_reclass != "Undetermined")
 v_cod <- sort(unique(df_reclass$cod_reclass))
 
 # Create temp id
-dat <- dat %>% 
-  mutate(tempid = 1:n()) 
+dat$tempid <- 1:nrow(dat)
 
 #dat %>% filter(id %in% "IND-1999-0401-138-0-12-T") %>% View
 
@@ -104,12 +101,12 @@ length(unique(studyupdWide$id)) == length(unique(dat$id))
 if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){
   # Same number of study data points as model input?
   if(nrow(studyupdWide) != nrow(studies)){
-    warning('Study database and model input have different number of data points.')
+    warning("Study database and model input have different number of data points.")
   }
 
   # Any differences in study id with model input?
   if(any(!(sort(studyupdWide$id) == sort(studies$id)))){
-    warning('Study database and model input have differences in study IDs.')
+    warning("Study database and model input have differences in study IDs.")
   }
 }
 

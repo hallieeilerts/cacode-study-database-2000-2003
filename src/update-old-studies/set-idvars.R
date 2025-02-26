@@ -242,7 +242,7 @@ if(!(nrow(dat) == length(unique(dat$id)))){
 
 # Check that whatever variable has been re-coded as strata_id is unique
 if(!(nrow(dat) == length(unique(dat$strata_id)))){
-  warning("Variable recoded as strata_id is not unique")
+  warning("Strata_id is not unique")
 }
 
 # Check that age_lb_m is always less than age_ub_m

@@ -44,7 +44,10 @@ unique(subset(datReclass, is.na(cod_reclass))$cod_mapped)
 # See mapped causes not present in any study
 # Some rare causes might not be reported in any studies (colvio, natdis)
 # Check to see if anything abnormal. For instance, 15-19 should not include very many studies that report neonatal causes.
+v_cod_mapped[v_cod_mapped %in% unique(datReclass$cod_mapped)]
 v_cod_mapped[!(v_cod_mapped %in% unique(datReclass$cod_mapped))]
+# In 10-14, saw that birth_asphyxia and neonatal_cond were mapped. Number of deaths are zero though.
+# subset(datReclass, cod_mapped %in% c("birth_asphyxia", "neonatal_cond") & cod_n > 0)
 
 # Reshape wide and aggregate deaths by cod reclass key
 datWide <- datReclass %>%

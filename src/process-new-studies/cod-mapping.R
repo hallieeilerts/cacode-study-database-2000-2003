@@ -29,7 +29,7 @@ if(ageSexSuffix %in% c("05to09y", "10to14y", "15to19yF", "15to19yM")){
   nrow(dat)
 }
 
-length(unique(dat$article_id)[grepl("adhoc", unique(dat$article_id), ignore.case = TRUE)]) # 252
+length(grepl("adhoc", unique(dat$ref_id), ignore.case = TRUE)) # 63
 
 # Subset data points applicable to age group being processed
 if(ageSexSuffix %in% "00to28d"){

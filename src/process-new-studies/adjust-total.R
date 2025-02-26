@@ -37,7 +37,9 @@ length(totSmall)
 dat$totdeaths[totSmall] <- apply(dat[totSmall, paste0(v_cod_reclass)], 1, sum, na.rm = T)
 # Check that length is now zerp
 totSmall <- which(dat$totdeaths - apply(dat[, paste0(v_cod_reclass)], 1, sum, na.rm = T) < -.01)
-length(totSmall) == 0
+if(length(totSmall) != 0){
+  warning("totdeaths too large")
+}
 
 # Adjust OTHER when total deaths are bigger than sum of COD
 totLarge <- which(dat$totdeaths - apply(dat[, paste0(v_cod_reclass)], 1, sum, na.rm = T) > .01)
@@ -70,7 +72,9 @@ if (length(totLarge) > 1) {
 }
 # Check that length is now zero
 totLarge <- which(dat$totdeaths - apply(dat[, paste0(v_cod_reclass)], 1, sum, na.rm = T) > .01)
-length(totLarge) == 0
+if(length(totLarge) != 0){
+  warning("totdeaths too large")
+}
 
 # Save output -------------------------------------------------------------
 

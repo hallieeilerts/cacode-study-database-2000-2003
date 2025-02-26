@@ -113,7 +113,9 @@ dat[, paste0(v_cod_reclass)] <- round(dat[, paste0(v_cod_reclass)])
 dat$totdeaths <- apply(dat[, paste0(v_cod_reclass)], 1, sum, na.rm = T)
 
 # Check there are no negative values
-which(dat[, paste(v_cod_reclass)] < 0)
+if(length(which(dat[, paste(v_cod_reclass)] < 0)) > 0 ){
+  warning("negative values in CODs")
+}
 
 # Combine excluded data
 dat_exc <- rbind(dat_exc1, dat_exc2)
