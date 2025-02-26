@@ -231,6 +231,7 @@ key <- key[order(key$all),]
 
 # Save output -------------------------------------------------------------
 
-write.csv(key, paste0("./gen/update-old-studies/output/CovariateKey_Study2019Pred2023_",format(Sys.Date(), format="%Y%m%d"),".csv", sep = ""), row.names = FALSE)
+warning("Covariate key saving turned off on February 24, 2025. Turn back on saving function if update made to covariates.")
+#write.csv(key, paste0("./gen/update-old-studies/output/CovariateKey_Study2019Pred2023_",format(Sys.Date(), format="%Y%m%d"),".csv", sep = ""), row.names = FALSE)
 
 
