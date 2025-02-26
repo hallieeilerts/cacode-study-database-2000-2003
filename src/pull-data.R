@@ -24,7 +24,7 @@ for(i in 1:length(dat_filename)){
 fn_initEnvironmentData("prediction-database-india")
 dat_filename <- list.files(paste0(pathDataWarehouse, "/2000-2021/databases/prediction-database-india", sep = ""))
 for(i in 1:length(dat_filename)){
-  file.copy(from = paste0(pathDataWarehouse, "/2000-2023/databases/prediction-database-india/",dat_filename[i], sep = ""),
+  file.copy(from = paste0(pathDataWarehouse, "/2000-2021/databases/prediction-database-india/",dat_filename[i], sep = ""),
             to   = paste0("./data/prediction-database-india/",dat_filename[i]))
 }
 
@@ -55,7 +55,6 @@ for(i in 1:length(dat_filename)){
 # New study data
 fn_initEnvironmentData("study-data")
 dat_filename <- list.files(paste0(pathDataWarehouse, "/2000-2023/data/study-data", sep = ""))
-dat_filename <- dat_filename[grepl("long", dat_filename, ignore.case = TRUE)]
 for(i in 1:length(dat_filename)){
   file.copy(from = paste0(pathDataWarehouse, "/2000-2023/data/study-data/",dat_filename[i], sep = ""),
             to   = paste0("./data/study-data/",dat_filename[i]))
