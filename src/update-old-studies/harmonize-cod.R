@@ -230,7 +230,7 @@ if(length(v_missing) > 0){
 totDif <- which(datCOD$totdeaths != apply(datCOD[, paste0(v_cod_reclass)], 1, sum, na.rm = T))
 if(length(totDif)>0){
   warning("Sum of causes does not equal totdeaths.")
-  View(dat[totDif,])
+  #View(dat[totDif,])
 }
 
 # Check no negative CODs

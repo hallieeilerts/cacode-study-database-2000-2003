@@ -1,6 +1,7 @@
 ################################################################################
-#' @description Create covariate replacement key
-#' @return Key with study data point id and covariate that should be updated with a new national prediction database value
+#' @description Identify covariates in old study databases that are national 
+#' and should be updated with a new national prediction database value
+#' @return Key with study data point id and covariate name
 ################################################################################
 #' Clear environment
 rm(list = ls())

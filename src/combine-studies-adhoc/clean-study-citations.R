@@ -20,7 +20,7 @@ dat <- dat %>%
   rename(citation = Bibliography,
          ref_id = Refid)
 
-# remove special characters
+# remove accents/special characters before saving to csv
 dat$citation <- stri_trans_general(dat$citation, "Latin-ASCII")
 
 # Create author column

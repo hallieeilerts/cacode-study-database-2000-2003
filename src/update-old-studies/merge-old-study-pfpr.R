@@ -1,6 +1,12 @@
 ################################################################################
-#' @description Merge on study-level pfpr for old 5-19y studies
-#' @return Study data points with covariates in long format, including study-level pfpr
+#' @description Merge on study-level pfpr for old 5-19y studies. 
+#' In previous round, 5-19y studies had national-level pfpr. 
+#' We requested study-level pfpr for old 5-19y studies from MAP for 2000-2023 round. 
+#' (Also requested study-level pfpr for all new studies 0-19y)
+#' Old 1-59m studies already had study-level pfpr. 
+#' Old neonate studies didn't, but they don't use pfpr as a covariate. 
+#' The pfpr covariate merged onto old neonatal studies is national.
+#' @return Study data points for 5-19y with covariates in long format, including study-level pfpr
 ################################################################################
 #' Clear environment
 rm(list = ls())
@@ -11,7 +17,8 @@ library(data.table)
 #' Inputs
 source("./src/set-inputs.R")
 ## Old age-specific study database in long format that now has covariate names and scales as pred database
-# Old 1-59m already had study-level pfpr. And old neonate study database did not include pfpr.
+# Old 1-59m already had study-level pfpr. 
+# old neonate study database did not include pfpr.
 if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){ 
   dat <- read.csv(paste0("./gen/update-old-studies/temp/studies-long_upd-names-scales_", ageSexSuffix, ".csv"))
 }

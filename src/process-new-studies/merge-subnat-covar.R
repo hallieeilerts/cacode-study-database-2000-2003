@@ -68,6 +68,7 @@ df_studies %>%
 # 1-59m: BOL, CHN, IRN
 ## There are no DHS for China or Iran
 # 5-9y: all match
+# 10-14y: all match
 
 # Merge studies to key with study id/DHS survey match/DHS region match
 df_studies <- merge(df_studies, key_dhs_reg[,c("strata_id","dhs_match","admin_level","region_name")], by = c("strata_id","dhs_match"), all.x = TRUE)
@@ -103,8 +104,8 @@ df_covar %>%
   select(survey_id, region_name) %>%
   unique() %>%
   left_join(dhsWide[,c("survey_id", "region_name","iso3")]) #%>% View
-# If the iso3 from the DHS region key is not missing, it means the region did merge but the value was missing for that region
-# Check regional covar that are missing
+# If the iso3 from the DHS region key is not NA it means the region did merge but the value was missing for that region
+# Check covariates that are missing
 df_covar %>%
   filter(!is.na(region_name) & is.na(value)) %>%
   select(survey_id, region_name, variable) %>%
@@ -112,6 +113,7 @@ df_covar %>%
   left_join(dhsWide[,c("survey_id", "region_name","iso3")]) %>%
   filter(!is.na(iso3))
 # 5-9y: edu_mean_m, sex_age15_m, sex_age15_mf, ors_f, ors_m, ors_mf, obese_mf
+# 10-14y: edu_mean_m, sex_age15_m, sex_age15_mf, ors_f, ors_m, ors_mf
 
 # If region_name is national, it means that the value was missing for that nation
 # Check national covar that are missing
@@ -120,6 +122,7 @@ df_covar %>%
   filter(region_name == "XXNATIONALXX")
 # 1-59m: edu_mean_f, edu_mean_mf
 # 5-9y: none
+# 10-14y: edu_mean_mf for GH2014DHS
 
 # Decision: if it is a national-level study, the value should come from the prediction database and not a national-level DHS data point.
 # Comment out the below line of code in order to use DHS national value (if decision changes)

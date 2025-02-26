@@ -33,9 +33,6 @@ dat <- dat %>%
          location_short = stri_trans_general(location_short, "Latin-ASCII"),
          location_long = stri_trans_general(location_long, "Latin-ASCII"))
 
-
-# Create age group in months variable
-
 # Rename in adhoc to match studies
 # For ref_id, remove the last underscore which is effectively the strata number
 adhoc <- adhoc %>%

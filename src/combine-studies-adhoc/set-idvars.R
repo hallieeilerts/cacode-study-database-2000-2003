@@ -21,7 +21,6 @@ any(trimws(dat) == "", na.rm = TRUE)
 # Replace empty strings or spaces of any size with NA
 dat[dat == "" | grepl("^\\s*$", dat)] <- NA
 
-
 # Generate age variables in months
 dat <- dat %>%
   mutate(age_lb = as.numeric(age_lb),
@@ -64,7 +63,7 @@ dat$nationalrep[dat$nationalrep == "National"] <- 1
 dat$nationalrep[dat$nationalrep == "yes"] <- 1
 dat$nationalrep <- as.numeric(dat$nationalrep)
 
-# VA algorithm
+# Clean VA algorithm
 # If two algorithms are listed in va_alg, and the relevant one is specified in strata_other1, replace it.
 nrow(dat) # 557
 dat$tempid <- 1:nrow(dat)
