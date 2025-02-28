@@ -1,6 +1,6 @@
 ################################################################################
-#' @description Exclude studies with only "Other" causes reported, redistribute "Other" to other-specific
-#' Round deaths to integers and recalculate totdeaths
+#' @description Exclude studies with only "Other" causes reported, 
+#' Redistribute "Other" to other-specific
 #' @return 
 ################################################################################
 #' Clear environment
@@ -39,31 +39,11 @@ idExclude <- apply(dat[, paste(v_nonOther)], 1,
 sum(idExclude) # Number of excluded data points
 
 # idExclude will be a vector of 0 or 1's for each study data point
-dat_exc1 <- dat[which(idExclude == 1), ]
-if(nrow(dat_exc1) > 0 ){
-  dat_exc1$exclude_reason <- "Only other dumpster reported"
+dat_exc <- dat[which(idExclude == 1), ]
+if(nrow(dat_exc) > 0 ){
+  dat_exc$exclude_reason <- "Only other dumpster reported"
 }
 dat <- dat[which(idExclude == 0), ]
-
-# If only < 2 causes reported, exclude data point
-# Note 2024-12-20: inclusion criteria remembered by Jamie. Not sure if should apply to 5-19 as well
-# Or scrap this and apply 5-19y criteria to under-5.
-if(ageSexSuffix %in% c("00to28d", "01to59m")){
-  v_nonUndt <- v_cod_reclass[!(v_cod_reclass %in% "Undetermined")]
-  idExclude <- apply(dat[, paste(v_nonUndt)], 1,
-                     function(x) {
-                       if ( sum(!is.na(x)) < 2) {
-                         return(1)
-                       } else return(0)
-                     })
-  dat_exc2 <- dat[which(idExclude == 1), ]
-  if(nrow(dat_exc2) > 0 ){
-    dat_exc2$exclude_reason <- "Less than 2 CODs reported"
-  }
-  dat <- dat[which(idExclude == 0), ]
-}else{
-  dat_exc2 <- dat[0,]
-}
 
 # 5-19 have multiple "Other" categories
 # If Other = 0 and other-specific were reported, assign NA to Other
@@ -116,9 +96,6 @@ dat$totdeaths <- apply(dat[, paste0(v_cod_reclass)], 1, sum, na.rm = T)
 if(length(which(dat[, paste(v_cod_reclass)] < 0)) > 0 ){
   warning("negative values in CODs")
 }
-
-# Combine excluded data
-dat_exc <- rbind(dat_exc1, dat_exc2)
 
 # Save output -------------------------------------------------------------
 
