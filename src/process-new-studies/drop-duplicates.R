@@ -91,9 +91,10 @@ datWide <- dat %>%
 # Identify if there are M, F, and T data points available and keep appropriate one depending on age/sex group.
 # e.g., For 5-9y, if all were available, keep T. Note that if only M and F were available, these will be collapsed at a later stage.
 
-# Study data points that are excluded from all age groups because they are LiST or GBD
+# Study data points that are excluded from all age groups because they are LiST, GBD, CHAMPS
 # !!!! Need to add ref_id for "10327" and "10661". These are ref_id. Find the article id in 5-19y data
-v_exclude_article_listgbd <- c("R202210648", "R202210327", "R202210661", "R202223055")
+v_exclude_article_listgbd <- c("R202210648", "R202210327", "R202210661", "R202223055",
+                               "R2022312")
 
 # Duplicate dropping
 if(ageSexSuffix == "00to28d"){
@@ -181,7 +182,7 @@ if(length(v_exclude_strataid) > 0 |  length(v_exclude_article) > 0){
     filter(strata_id %in% v_exclude_strataid | 
              article_id %in% v_exclude_article |
               article_id %in% v_exclude_article_listgbd) %>%
-    mutate(exclude_reason = ifelse(article_id %in% v_exclude_article_listgbd, "GBD or LiST", "Duplicate"))
+    mutate(exclude_reason = ifelse(article_id %in% v_exclude_article_listgbd, "GBD, LiST, or CHAMPS", "Duplicate"))
 }
 
 # Exclude duplicates
