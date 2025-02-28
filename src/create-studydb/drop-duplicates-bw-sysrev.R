@@ -117,6 +117,14 @@ if(ageSexSuffix == "15to19yM"){
   v_exclude_strataid <- c()
 }
 
+# Create empty data frame for exclusions
+dat_exc <- dat[0,]
+if(length(v_exclude_strataid) > 0){
+  dat_exc <- dat %>%
+    filter(strata_id %in% v_exclude_strataid) %>%
+    mutate(exclude_reason = "Duplicate with 2000-2019")
+}
+
 # Exclude duplicates
 dat <- dat %>%
   filter(!(strata_id %in% v_exclude_strataid))
@@ -130,5 +138,6 @@ dat <- dat %>%
 # Save outputs ------------------------------------------------------------
 
 write.csv(dat, paste0("./gen/create-studydb/temp/studies-combined_dup-drop_",ageSexSuffix,".csv"), row.names = FALSE)
+write.csv(dat_exc, paste0("./gen/create-studydb/temp/dat_exc_",ageSexSuffix,".csv",sep =""), row.names = FALSE)
 
 
