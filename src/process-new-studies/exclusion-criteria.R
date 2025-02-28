@@ -86,7 +86,7 @@ rownames(dat) <- NULL
 
 # Save output -------------------------------------------------------------
 
-write.csv(dat, paste("./gen/process-new-studies/temp/studies_exc-size_", ageSexSuffix,".csv", sep = ""), row.names = FALSE)
+write.csv(dat, paste("./gen/process-new-studies/temp/studies_exc_", ageSexSuffix,".csv", sep = ""), row.names = FALSE)
 write.csv(dat_exc, paste0("./gen/process-new-studies/audit/dat_exc2_",ageSexSuffix,".csv",sep =""), row.names = FALSE)
 
 

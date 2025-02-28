@@ -1,6 +1,5 @@
 ################################################################################
-#' @description For neonates and postneonates, map and aggregate CODs, round to whole numbers
-#' For 5-19, update names of old CODs
+#' @description Harmonize COD names, exclude Undetermined
 #' @return Study CODs aggregated by reclassified categories in long format 
 ################################################################################
 #' Clear environment
@@ -12,7 +11,7 @@ library(data.table)
 source("./src/set-inputs.R")
 ## Old study databases with under-5 duplicates dropped
 if(ageSexSuffix %in% c("00to28d","01to59m")){
-  dat <- read.csv(paste0("./gen/update-old-studies/temp/studies_exc-size_", ageSexSuffix, ".csv", sep = ""))
+  dat <- read.csv(paste0("./gen/update-old-studies/temp/studies_exc_", ageSexSuffix, ".csv", sep = ""))
 }
 ## Old study databases with updated id variables to match new studies
 if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF", "15to19yM")){
@@ -36,6 +35,7 @@ df_reclass <- df_reclass[,c("cod_mapped", "cod_reclass")]
 v_cod_reclass <- unique(df_reclass$cod_reclass)
 v_cod_mapped <- key_cod$cod_mapped
 
+# Rename causes
 datCOD <- dat %>% 
   rename_with(
     ~ case_when(
@@ -44,7 +44,7 @@ datCOD <- dat %>%
   ) %>%
   select(all_of(idVars), "totdeaths", all_of(v_cod_reclass))
 
-# Check that all reclassified COD are reported
+# Check that all reclassified COD are reported and add as columns if not
 v_missing <- v_cod_reclass[!(v_cod_reclass %in% names(datCOD))]
 if(length(v_missing) > 0){
   warning("Missing some expected CODs in old study database.")
@@ -54,8 +54,7 @@ if(length(v_missing) > 0){
   }
 }
 
-# Recalculate totdeaths, excluding undetermined
-v_cod_reclass <- v_cod_reclass[!(v_cod_reclass %in% "Undetermined")]
+# Recalculate totdeaths
 datCOD$totdeaths <- apply(datCOD[, paste0(v_cod_reclass)], 1, sum, na.rm = T)
 
 # Check that totdeaths is equal to sum of causes

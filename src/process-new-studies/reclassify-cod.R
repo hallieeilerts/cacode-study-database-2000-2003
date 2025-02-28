@@ -8,7 +8,7 @@ rm(list = ls())
 #' Inputs
 source("./src/set-inputs.R")
 ## Study data with too small and too large data points excluded
-dat <- read.csv(paste0("./gen/process-new-studies/temp/studies_exc-size_", ageSexSuffix, ".csv", sep = ""))
+dat <- read.csv(paste0("./gen/process-new-studies/temp/studies_exc_", ageSexSuffix, ".csv", sep = ""))
 ## Key with cod reclassification
 dat_filename <- list.files("./data/classification-keys")
 dat_filename <- dat_filename[grepl("codreclassification", dat_filename, ignore.case = TRUE)]

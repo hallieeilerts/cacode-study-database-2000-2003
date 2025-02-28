@@ -13,7 +13,7 @@ source("./src/set-inputs.R")
 ## All studies from 2000-2019
 studies <- read.csv(paste0("./gen/update-old-studies/temp/studies_cod-agg_", ageSexSuffix, ".csv"))
 ## Studies from 2000-2019 with some data points excluded
-dat_incl <- read.csv(paste0("./gen/update-old-studies/temp/studies_exc-size_", ageSexSuffix, ".csv"))
+dat_incl <- read.csv(paste0("./gen/update-old-studies/temp/studies_exc_", ageSexSuffix, ".csv"))
 ## Excluded studies from 2000-2019 with some data points excluded
 dat_filename <- list.files("./gen/update-old-studies/audit")
 dat_filename <- dat_filename[grepl("dat_exc", dat_filename, ignore.case = TRUE)]
