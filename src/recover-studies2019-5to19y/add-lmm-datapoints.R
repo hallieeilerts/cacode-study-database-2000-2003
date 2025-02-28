@@ -18,22 +18,7 @@ if(ageSexSuffix == "05to09y"){load("./data/model-inputs-old/20201217-Data5to9-VA
 if(ageSexSuffix == "10to14y"){load("./data/model-inputs-old/20201222-Data10to14-VAMCM009-Test8j.RData")}
 if(ageSexSuffix == "15to19yF"){load("./data/model-inputs-old/20210207-Data15to19Fem-VAMCM009-Test9.RData")}
 if(ageSexSuffix == "15to19yM"){load("./data/model-inputs-old/20210212-Data15to19Men-VAMCM009-Test9e.RData")}
-## Key with cod reclassification
-dat_filename <- list.files("./data/classification-keys")
-dat_filename <- dat_filename[grepl("codreclassification", dat_filename, ignore.case = TRUE)]
-dat_filename <- dat_filename[grepl(ageSexSuffix, dat_filename)] 
-dat_filename <- tail(sort(dat_filename),1) # Most recent
-key_cod <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
 ################################################################################
-
-# Reclassified CODs for this age group (includes Other and Undetermined)
-df_reclass <- subset(key_cod, !is.na(cod_reclass))
-# Exclude "TB" which has been redistributed (only present in 5-9y and 10-14y)
-df_reclass <- subset(df_reclass, cod_reclass != "TB")
-# Exclude "Undetermined" which is used to eliminate studies in cleaning phase
-df_reclass <- subset(df_reclass, cod_reclass != "Undetermined")
-df_reclass <- df_reclass[,c("cod_mapped", "cod_reclass")]
-v_cod_reclass <- unique(df_reclass$cod_reclass)
 
 # Find LMM data points that are in model input but not study database
 v_lmm <- studies$id[!(studies$id %in% studydb$id)]
