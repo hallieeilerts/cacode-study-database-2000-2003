@@ -9,7 +9,7 @@ library(tidyverse)
 #' Inputs
 source("./src/set-inputs.R")
 ## Study data with too small and too large data points excluded
-studies <- read.csv(paste0("./gen/process-new-studies/temp/studies_exc-size_", ageSexSuffix, ".csv", sep = ""))
+studies <- read.csv(paste0("./gen/process-new-studies/temp/studies_exc_", ageSexSuffix, ".csv", sep = ""))
 ## Prediction Database
 dat_filename <- list.files("./data/prediction-database")
 dat_filename <- dat_filename[grepl("long", dat_filename, ignore.case = TRUE)]

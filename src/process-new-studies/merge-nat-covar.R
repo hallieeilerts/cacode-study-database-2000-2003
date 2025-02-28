@@ -9,7 +9,7 @@ require(tidyverse)
 #' Inputs
 source("./src/set-inputs.R")
 ## Study data with too small and too large data points excluded
-studies <- read.csv(paste0("./gen/process-new-studies/temp/studies_exc-size_", ageSexSuffix, ".csv", sep = ""))
+studies <- read.csv(paste0("./gen/process-new-studies/temp/studies_exc_", ageSexSuffix, ".csv", sep = ""))
 ## Long form data with identifying columns for studies and DHS subnational covar, study-level pfpr merged where possible
 studycovar <- read.csv(paste0("./gen/process-new-studies/temp/studycovar_subnat-pfpr_", ageSexSuffix, ".csv", sep = ""))
 ## Prediction Database
