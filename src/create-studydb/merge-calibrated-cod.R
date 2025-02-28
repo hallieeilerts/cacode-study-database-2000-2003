@@ -31,14 +31,14 @@ dat_filename <- dat_filename[grepl("studydatabase2023", dat_filename, ignore.cas
 dat_filename <- dat_filename[grepl(ageSexSuffix, dat_filename)] 
 dat_filename <- dat_filename[!(grepl("noMal", dat_filename, ignore.case = TRUE))] 
 dat_filename <- tail(sort(dat_filename),1) # Most recent
-dat_cal <- read_excel(paste0("./data/study-data-calibrated/", dat_filename, sep = ""))
+dat_cal <- read.csv(paste0("./data/study-data-calibrated/", dat_filename, sep = ""))
 if(ageSexSuffix %in% c("01to59m")){
   dat_filename <- list.files("./data/study-data-calibrated")
   dat_filename <- dat_filename[grepl("studydatabase2023", dat_filename, ignore.case = TRUE)]
   dat_filename <- dat_filename[grepl(ageSexSuffix, dat_filename)] 
   dat_filename <- dat_filename[(grepl("noMal", dat_filename, ignore.case = TRUE))] 
   dat_filename <- tail(sort(dat_filename),1) # Most recent
-  datNoMal_cal <- read_excel(paste0("./data/study-data-calibrated/", dat_filename, sep = ""))
+  datNoMal_cal <- read.csv(paste0("./data/study-data-calibrated/", dat_filename, sep = ""))
 }
 ## Key with cod reclassification
 dat_filename <- list.files("./data/classification-keys")
