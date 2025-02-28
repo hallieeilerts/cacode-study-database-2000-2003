@@ -14,7 +14,7 @@ dat_filename <- list.files("./data/classification-keys")
 dat_filename <- dat_filename[grepl("codreclassification", dat_filename, ignore.case = TRUE)]
 dat_filename <- dat_filename[grepl(ageSexSuffix, dat_filename)] 
 dat_filename <- head(sort(dat_filename),1) # Most recent
-key <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
+key_cod <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
 ################################################################################
 
 #--------------------------#
@@ -23,7 +23,7 @@ key <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
 
 # Reclassified CODs for this age group
 # (includes Other and Undetermined)
-v_cod_reclass <- unique(subset(key, !is.na(cod_reclass))$cod_reclass)
+v_cod_reclass <- unique(subset(key_cod, !is.na(cod_reclass))$cod_reclass)
 # Exclude "TB" which has been redistributed (only present in 5-9y and 10-14y reclass vector)
 # Exclude "Undetermined" because any deaths attributed to Undetermined have been excluded in exclude-by-size
 v_cod_reclass <- v_cod_reclass[!(v_cod_reclass %in% c("TB", "Undetermined"))]
@@ -58,7 +58,7 @@ for (i in v_cod_reclass) {
   deaths[, paste(i)][deaths$cause == i] <- 1
 }
 
-reclass <-  key[,c("cod_reclass", "cod_level2", "cod_level3", "cod_level4")]
+reclass <-  key_cod[,c("cod_reclass", "cod_level2", "cod_level3", "cod_level4")]
 names(reclass) <- c("Reclass", "Level2", "Level3", "Level4")
 misclass <- aggregate(reclass, by = list(reclass$Reclass), unique)[,-1]
 
