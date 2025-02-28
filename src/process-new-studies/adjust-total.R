@@ -35,7 +35,7 @@ v_cod_reclass <- v_cod_reclass[!(v_cod_reclass %in% "TB")]
 totSmall <- which(dat$totdeaths - apply(dat[, paste0(v_cod_reclass)], 1, sum, na.rm = T) < -.01)
 length(totSmall)
 dat$totdeaths[totSmall] <- apply(dat[totSmall, paste0(v_cod_reclass)], 1, sum, na.rm = T)
-# Check that length is now zerp
+# Check that length is now zero
 totSmall <- which(dat$totdeaths - apply(dat[, paste0(v_cod_reclass)], 1, sum, na.rm = T) < -.01)
 if(length(totSmall) != 0){
   warning("totdeaths too large")

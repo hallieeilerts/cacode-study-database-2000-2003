@@ -5,6 +5,7 @@
 #' Clear environment
 rm(list = ls())
 #' Libraries
+library(tidyverse)
 #' Inputs
 source("./src/set-inputs.R")
 # Combined old and new studies
