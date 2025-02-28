@@ -18,12 +18,6 @@ dat_filename <- list.files("./gen/update-old-studies/output")
 dat_filename <- dat_filename[grepl("covariatekey", dat_filename, ignore.case = TRUE)] 
 dat_filename <- tail(sort(dat_filename), 1) # most recent
 key_covar <- read.csv(paste0("./gen/update-old-studies/output/", dat_filename, sep = ""))
-## Key with cod reclassification
-dat_filename <- list.files("./data/classification-keys")
-dat_filename <- dat_filename[grepl("codreclassification", dat_filename, ignore.case = TRUE)]
-dat_filename <- dat_filename[grepl(ageSexSuffix, dat_filename)] 
-dat_filename <- tail(sort(dat_filename),1) # Most recent
-key_cod <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
 ################################################################################
 
 # List of covariates in study database
