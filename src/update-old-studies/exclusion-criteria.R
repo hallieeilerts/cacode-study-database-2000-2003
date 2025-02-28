@@ -27,6 +27,8 @@ key <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
 v_cod_reclass <- unique(subset(key, !is.na(cod_reclass))$cod_reclass)
 # Exclude "TB" which has been redistributed (only present in 5-9y and 10-14y reclass vector)
 v_cod_reclass <- v_cod_reclass[!(v_cod_reclass %in% "TB")]
+# Exclude "Undetermined" for certain checks
+v_cod_noundt <- v_cod_reclass[!(v_cod_reclass %in% "Undetermined")]
 
 # Create empty data frame for exclusions
 dat_exc <- dat[0,]
@@ -41,7 +43,6 @@ if(length(idExclude) > 0 ){
 }
 
 # Exclude data points with < 2 non-missing and non-zero causes
-v_cod_noundt <- v_cod_reclass[!(v_cod_reclass %in% "Undetermined")]
 idExclude <- which(apply(dat[, paste(v_cod_noundt)], 1,
                          function(x) {
                            if ( sum(!is.na(x) & round(x) != 0) < 2) {

@@ -37,6 +37,7 @@ dat$definition[dat$variable %in% key_cod$cod_reclass] <- "Cause of death"
 dat$scale[dat$variable %in% key_cod$cod_reclass] <- "integer"
 dat$definition[grepl("source", dat$variable)] <- "Source of covariate"
 dat$scale[grepl("source", dat$variable)] <- "free_text"
+dat$definition[dat$variable %in% "Undetermined"] <- "Undetermined cause of death. Not counted in total (totdeaths)."
 
 # Manually define id variables
 dat$definition[dat$variable == "round"] <- "Denotes whether the data point is from the study database originally used to produce the 2000-2019 estimates or the recently conducted 2000-2023 systematic review."
@@ -120,7 +121,7 @@ dat$scale[dat$variable == "year_end"] <- "integer"
 dat$definition[dat$variable == "year_mid"] <- "Middle year of study data point. floor(year_start + (year_end - year_start)/2)"
 dat$scale[dat$variable == "year_mid"] <- "integer"
 
-dat$definition[dat$variable == "totdeaths"] <- "Total deaths reported in the study data point"
+dat$definition[dat$variable == "totdeaths"] <- "Total deaths reported in the study data point. Does not included Undetermined."
 dat$scale[dat$variable == "totdeaths"] <- "integer"
 
 dat <- dat[,c("recnr","variable","scale","definition")]

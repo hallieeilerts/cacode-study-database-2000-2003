@@ -15,21 +15,21 @@ dat_filename <- list.files("./data/classification-keys")
 dat_filename <- dat_filename[grepl("codreclassification", dat_filename, ignore.case = TRUE)]
 dat_filename <- dat_filename[grepl(ageSexSuffix, dat_filename)] 
 dat_filename <- tail(sort(dat_filename),1) # Most recent
-key <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
+key_cod <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
 ################################################################################
 
 # Reclassified CODs for this age group (includes Other and Undetermined)
-v_cod_reclass <- unique(subset(key, !is.na(cod_reclass))$cod_reclass)
+v_cod_reclass <- unique(subset(key_cod, !is.na(cod_reclass))$cod_reclass)
 # Exclude "TB" which has been redistributed (only present in 5-9y and 10-14y reclass vector)
 v_cod_reclass <- v_cod_reclass[!(v_cod_reclass %in% "TB")]
-# Exclude "Undetermined" which will be used here to eliminate studies
-v_cod_reclass <- v_cod_reclass[!(v_cod_reclass %in% "Undetermined")]
+# Exclude "Undetermined" for certain checks
+v_cod_noundt <- v_cod_reclass[!(v_cod_reclass %in% "Undetermined")]
 
 # Create empty data frame for exclusions
 dat_exc <- dat[0,]
 
 # Exclude data points with < 2 non-missing and non-zero causes
-idExclude <- which(apply(dat[, paste(v_cod_reclass)], 1,
+idExclude <- which(apply(dat[, paste(v_cod_noundt)], 1,
                    function(x) {
                      if ( sum(!is.na(x) & round(x) != 0) < 2) {
                        return(1)
@@ -51,11 +51,12 @@ if(length(idExclude) > 0 ){
   dat <- dat[-idExclude, ]
 }
 
+# Feb 28, 2025: keeping in undetermined column per Jamie's request
 # Exclude Undetermined from data points
-dat <- dat[, !names(dat) %in% c('Undetermined')]
+# dat <- dat[, !names(dat) %in% c('Undetermined')]
 
 # Re-calculate total deaths
-dat$totdeaths <- apply(dat[, paste0(v_cod_reclass)], 1, sum, na.rm = T)
+dat$totdeaths <- apply(dat[, paste0(v_cod_noundt)], 1, sum, na.rm = T)
 
 # Exclude data points with less than min deaths
 idExclude <- which(dat$totdeaths < minDeaths)

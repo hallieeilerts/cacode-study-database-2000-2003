@@ -18,12 +18,11 @@ key_cod <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""
 ################################################################################
 
 # Reclassified CODs for this age group (includes Other and Undetermined)
-df_reclass <- subset(key_cod, !is.na(cod_reclass))
-# Exclude "TB" which has been redistributed (only present in 5-9y and 10-14y)
-df_reclass <- subset(df_reclass, cod_reclass != "TB")
-# Exclude "Undetermined" which is used to eliminate studies in cleaning phase
-df_reclass <- subset(df_reclass, cod_reclass != "Undetermined")
-v_cod <- unique(df_reclass$cod_reclass)
+v_cod_reclass <- unique(subset(key_cod, !is.na(cod_reclass))$cod_reclass)
+# Exclude "TB" which has been redistributed (only present in 5-9y and 10-14y reclass vector)
+v_cod_reclass <- v_cod_reclass[!(v_cod_reclass %in% "TB")]
+# Exclude "Undetermined" for certain checks
+v_cod <- v_cod_reclass[!(v_cod_reclass %in% "Undetermined")]
 
 ### Basic duplicate checks between systematic reviews
 # Old neonates do not have age and years to check

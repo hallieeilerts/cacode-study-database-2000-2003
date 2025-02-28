@@ -49,46 +49,72 @@ key_cod <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""
 ################################################################################
 
 # Reclassified CODs for this age group (includes Other and Undetermined)
-df_reclass <- subset(key_cod, !is.na(cod_reclass))
-# Exclude "TB" which has been redistributed (only present in key for 5-9y and 10-14y)
-df_reclass <- subset(df_reclass, cod_reclass != "TB")
-# Exclude "Undetermined" which is used to eliminate studies in cleaning phase
-df_reclass <- subset(df_reclass, cod_reclass != "Undetermined")
-v_cod <- sort(unique(df_reclass$cod_reclass))
+v_cod_reclass <- unique(subset(key_cod, !is.na(cod_reclass))$cod_reclass)
+# Exclude "TB" which has been redistributed (only present in 5-9y and 10-14y reclass vector)
+v_cod_reclass <- v_cod_reclass[!(v_cod_reclass %in% "TB")]
+# Exclude "Undetermined" for certain checks
+v_cod_noundt <- v_cod_reclass[!(v_cod_reclass %in% "Undetermined")]
 
 if(nrow(dat) != nrow(dat_cal)){
   warning("Study data and calibrated data have different number of rows.")
-  # This is ok for neonates because we dropped 18 GBD and LiST data points after sharing with Sandy.
-  # For 1-59m it should be the same number of data points.
-}
-if(ncol(dat) != ncol(dat_cal)){
-  warning("Study data and calibrated data have different number of rows.")
+  # This is because we dropped GBD, LiST, and CHAMPS data points after sharing with Sandy.
+  # Also dropped small adhoc studies from India.
+  # Study db will have fewer data points compared to calibration on 20250214 for 1-59m and 20250218 for neonates
 }
 
+# Save column names of study data
 v_col_names <- names(dat)
 
-cal <- dat_cal %>%
-  select(all_of(c("strata_id", v_cod))) %>%
+# Adjust strata_id for adhoc studies in calibrated data
+# Updated these strata_id to make more consistent with other study data points after sharing with Sandy (woops)
+dat_cal$strata_id[grepl("adhoc", dat_cal$strata_id, ignore.case = TRUE)] <-
+  gsub("adHoc", "", dat_cal$strata_id[grepl("adhoc", dat_cal$strata_id, ignore.case = TRUE)])
+if(ageSexSuffix %in% c("01to59m")){
+  datNoMal_cal$strata_id[grepl("adhoc", datNoMal_cal$strata_id, ignore.case = TRUE)] <-
+    gsub("adHoc", "", datNoMal_cal$strata_id[grepl("adhoc", datNoMal_cal$strata_id, ignore.case = TRUE)])
+}
+
+# Merge calibrated COD onto studies
+# Remove old COD columns
+dat_new <- dat_cal %>%
+  select(all_of(c("strata_id", v_cod_noundt))) %>%
+  mutate(flag = "Calibrated") %>%
   right_join(dat, by = "strata_id", suffix = c("", "_old")) %>% 
   select(-ends_with("_old")) %>%
-  select(all_of(v_col_names)) %>%
+  select(all_of(c(v_col_names, "flag"))) %>%
   arrange(recnr)
 
 if(ageSexSuffix %in% c("01to59m")){
   
   v_col_names <- names(datNoMal)
   
-  calNoMal <- datNoMal_cal %>%
-    select(all_of(c("strata_id", v_cod))) %>%
+  datNoMal_new <- datNoMal_cal %>%
+    select(all_of(c("strata_id", v_cod_nondt))) %>%
+    mutate(flag = "Calibrated") %>%
     right_join(datNoMal, by = "strata_id", suffix = c("", "_old")) %>% 
     select(-ends_with("_old")) %>%
     select(all_of(v_col_names)) %>%
     arrange(recnr)
 }
 
+
+# Check if any data points were not present in calibrated data
+if(nrow(subset(dat_new, is.na(flag))) > 0){
+  warning("Some data points did not merge with calibrated dataset.")
+}
+dat_new$flag <- NULL
+
+if(ageSexSuffix %in% c("01to59m")){
+  if(nrow(subset(datNoMal_new, is.na(flag))) > 0){
+    warning("Some data points in noMal dataset did not merge with calibrated dataset.")
+  }
+  datNoMal_new$flag <- NULL
+}
+
+
 # Save outputs ------------------------------------------------------------
 
-write.csv(cal, paste0("./gen/create-studydb/output/StudyDatabase2023_",ageSexSuffix,"-calibrated_",format(Sys.Date(), format="%Y%m%d"),".csv"), row.names = FALSE)
+write.csv(dat_new, paste0("./gen/create-studydb/output/StudyDatabase2023_",ageSexSuffix,"-calibrated_",format(Sys.Date(), format="%Y%m%d"),".csv"), row.names = FALSE)
 if(ageSexSuffix %in% c("01to59m")){
-  write.csv(calNoMal, paste0("./gen/create-studydb/output/StudyDatabase2023_",ageSexSuffix,"-calibrated-noMalnutrition_",format(Sys.Date(), format="%Y%m%d"),".csv"), row.names = FALSE)
+  write.csv(datNoMal_new, paste0("./gen/create-studydb/output/StudyDatabase2023_",ageSexSuffix,"-calibrated-noMalnutrition_",format(Sys.Date(), format="%Y%m%d"),".csv"), row.names = FALSE)
 }

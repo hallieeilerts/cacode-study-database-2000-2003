@@ -26,14 +26,11 @@ key_cod <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""
 ################################################################################
 
 # Reclassified CODs for this age group (includes Other and Undetermined)
-df_reclass <- subset(key_cod, !is.na(cod_reclass))
-# Exclude "TB" which has been redistributed (only present in 5-9y and 10-14y)
-df_reclass <- subset(df_reclass, cod_reclass != "TB")
-# Exclude "Undetermined" which is used to eliminate studies in cleaning phase
-df_reclass <- subset(df_reclass, cod_reclass != "Undetermined")
-df_reclass <- df_reclass[,c("cod_mapped", "cod_reclass")]
-v_cod_reclass <- unique(df_reclass$cod_reclass)
-v_cod_mapped <- key_cod$cod_mapped
+v_cod_reclass <- unique(subset(key_cod, !is.na(cod_reclass))$cod_reclass)
+# Exclude "TB" which has been redistributed (only present in 5-9y and 10-14y reclass vector)
+v_cod_reclass <- v_cod_reclass[!(v_cod_reclass %in% "TB")]
+# Exclude "Undetermined" for certain checks
+v_cod_noundt <- v_cod_reclass[!(v_cod_reclass %in% "Undetermined")]
 
 # Rename causes
 datCOD <- dat %>% 
@@ -55,10 +52,10 @@ if(length(v_missing) > 0){
 }
 
 # Recalculate totdeaths
-datCOD$totdeaths <- apply(datCOD[, paste0(v_cod_reclass)], 1, sum, na.rm = T)
+datCOD$totdeaths <- apply(datCOD[, paste0(v_cod_noundt)], 1, sum, na.rm = T)
 
 # Check that totdeaths is equal to sum of causes
-totDif <- which(datCOD$totdeaths != apply(datCOD[, paste0(v_cod_reclass)], 1, sum, na.rm = T))
+totDif <- which(datCOD$totdeaths != apply(datCOD[, paste0(v_cod_noundt)], 1, sum, na.rm = T))
 if(length(totDif)>0){
   warning("Sum of causes does not equal totdeaths.")
   #View(dat[totDif,])

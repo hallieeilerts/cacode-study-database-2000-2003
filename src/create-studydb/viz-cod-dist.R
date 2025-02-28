@@ -26,18 +26,17 @@ key_cod <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""
 ################################################################################
 
 # Reclassified CODs for this age group (includes Other and Undetermined)
-df_reclass <- subset(key_cod, !is.na(cod_reclass))
-# Exclude "TB" which has been redistributed (only present in key for 5-9y and 10-14y)
-df_reclass <- subset(df_reclass, cod_reclass != "TB")
-# Exclude "Undetermined" which is used to eliminate studies in cleaning phase
-df_reclass <- subset(df_reclass, cod_reclass != "Undetermined")
-v_cod <- sort(unique(df_reclass$cod_reclass))
+v_cod_reclass <- unique(subset(key_cod, !is.na(cod_reclass))$cod_reclass)
+# Exclude "TB" which has been redistributed (only present in 5-9y and 10-14y reclass vector)
+v_cod_reclass <- v_cod_reclass[!(v_cod_reclass %in% "TB")]
+# Exclude "Undetermined" for plots
+v_cod_noundt <- v_cod_reclass[!(v_cod_reclass %in% "Undetermined")]
 
 # plot distribution of causes of death
 p1 <- dat %>%
-  select(all_of(c("round", "strata_id", v_cod))) %>%
+  select(all_of(c("round", "strata_id", v_cod_reclass))) %>%
   pivot_longer(
-    cols = v_cod,
+    cols = v_cod_reclass,
     names_to = "cod"
   ) %>%
   group_by(round, strata_id) %>%
@@ -53,9 +52,9 @@ ggsave(paste0("./gen/create-studydb/audit/cod-dist_",ageSexSuffix, "_",format(Sy
 
 # condensed plot
 p2 <- dat %>%
-  select(all_of(c("round", "strata_id", v_cod))) %>%
+  select(all_of(c("round", "strata_id", v_cod_reclass))) %>%
   pivot_longer(
-    cols = v_cod,
+    cols = v_cod_reclass,
     names_to = "cod"
   ) %>%
   group_by(round, strata_id) %>%

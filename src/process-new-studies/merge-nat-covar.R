@@ -25,12 +25,9 @@ key_cod <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""
 ################################################################################
 
 # Reclassified CODs for this age group (includes Other and Undetermined)
-df_reclass <- subset(key_cod, !is.na(cod_reclass))
-# Exclude "TB" which has been redistributed (only present in 5-9y and 10-14y)
-df_reclass <- subset(df_reclass, cod_reclass != "TB")
-# Exclude "Undetermined" which is used to eliminate studies in cleaning phase
-df_reclass <- subset(df_reclass, cod_reclass != "Undetermined")
-v_cod <- sort(unique(df_reclass$cod_reclass))
+v_cod_reclass <- unique(subset(key_cod, !is.na(cod_reclass))$cod_reclass)
+# Exclude "TB" which has been redistributed (only present in 5-9y and 10-14y reclass vector)
+v_cod_reclass <- v_cod_reclass[!(v_cod_reclass %in% "TB")]
 
 # Subset columns of interest in prediction database
 df_pred <- pred[,c("variable","iso3","year","value_main")]
@@ -107,8 +104,8 @@ result <- merge(studies, df_covar_wide, by = "strata_id", all.x = TRUE)
 
 # Tidy
 result <- result[order(result$recnr),]
-v_other_col <- names(result)[!(names(result) %in% c(idVars, v_cod))]
-result <- result[,c(idVars, v_cod, v_other_col)]
+v_other_col <- names(result)[!(names(result) %in% c(idVars, v_cod_reclass))]
+result <- result[,c(idVars, v_cod_reclass, v_other_col)]
 
 # Save output(s) ----------------------------------------------------------
 

@@ -49,12 +49,9 @@ key_cod <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""
 v_pred_covar <- unique(subset(key_covar, !is.na(pred))$pred)
 
 # Reclassified CODs for this age group (includes Other and Undetermined)
-df_reclass <- subset(key_cod, !is.na(cod_reclass))
-# Exclude "TB" which has been redistributed (only present in key for 5-9y and 10-14y)
-df_reclass <- subset(df_reclass, cod_reclass != "TB")
-# Exclude "Undetermined" which is used to eliminate studies in cleaning phase
-df_reclass <- subset(df_reclass, cod_reclass != "Undetermined")
-v_cod <- sort(unique(df_reclass$cod_reclass))
+v_cod_reclass <- unique(subset(key_cod, !is.na(cod_reclass))$cod_reclass)
+# Exclude "TB" which has been redistributed (only present in 5-9y and 10-14y reclass vector)
+v_cod_reclass <- v_cod_reclass[!(v_cod_reclass %in% "TB")]
 
 # Create temp id
 dat$tempid <- 1:nrow(dat)
@@ -118,7 +115,7 @@ v_src <- paste0(v_covar, "_source", sep = "")
 v_covarsrc <- sort(c(v_covar, v_src))
 
 # Tidy
-studyupdWide <- studyupdWide[,c(idVars, "totdeaths", v_cod, v_covarsrc)]
+studyupdWide <- studyupdWide[,c(idVars, "totdeaths", v_cod_reclass, v_covarsrc)]
 studyupdWide <- studyupdWide[order(studyupdWide$recnr),]
 
 # Save outputs ------------------------------------------------------------

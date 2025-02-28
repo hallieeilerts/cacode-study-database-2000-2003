@@ -19,21 +19,20 @@ key_cod <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""
 ################################################################################
 
 # Reclassified CODs for this age group (includes Other and Undetermined)
-df_reclass <- subset(key_cod, !is.na(cod_reclass))
-# Exclude "TB" which has been redistributed (only present in key for 5-9y and 10-14y)
-df_reclass <- subset(df_reclass, cod_reclass != "TB")
-# Exclude "Undetermined" which is used to eliminate studies in cleaning phase
-df_reclass <- subset(df_reclass, cod_reclass != "Undetermined")
-v_cod <- sort(unique(df_reclass$cod_reclass))
+v_cod_reclass <- unique(subset(key_cod, !is.na(cod_reclass))$cod_reclass)
+# Exclude "TB" which has been redistributed (only present in 5-9y and 10-14y reclass vector)
+v_cod_reclass <- v_cod_reclass[!(v_cod_reclass %in% "TB")]
+# Exclude "Undetermined" for certain checks
+v_cod_noundt <- v_cod_reclass[!(v_cod_reclass %in% "Undetermined")]
 
 # Check that totdeaths is equal to sum of causes
-totDif <- which(dat$totdeaths != apply(dat[, paste0(v_cod)], 1, sum, na.rm = T))
+totDif <- which(dat$totdeaths != apply(dat[, paste0(v_cod_noundt)], 1, sum, na.rm = T))
 if(length(totDif)>0){
   warning("Sum of causes does not equal totdeaths.")
 }
 
 # Check no negative CODs
-codNeg <- apply(dat[, paste0(v_cod)], 2, function(x) x < 0)
+codNeg <- apply(dat[, paste0(v_cod_reclass)], 2, function(x) x < 0)
 codNeg <- as.data.frame(cbind(dat[,c("strata_id")], codNeg))
 codNeg <- codNeg %>%
   filter(if_any(everything(), ~ . == TRUE))
@@ -43,7 +42,7 @@ if(nrow(codNeg)>0){
 
 # Check if all COD values are either NA or whole numbers
 codWhole <- dat %>%
-  mutate(any_not_whole = if_any(all_of(v_cod), ~ !is.na(.) & (. %% 1 != 0))) %>%
+  mutate(any_not_whole = if_any(all_of(v_cod_reclass), ~ !is.na(.) & (. %% 1 != 0))) %>%
   filter(any_not_whole == TRUE)
 if(nrow(codWhole)>0){
   warning("Non-whole number COD values.")
