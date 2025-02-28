@@ -34,7 +34,14 @@ idVars <- c("recnr", "id", "ref_id", "article_id",
             "year_start", "year_end", "year_mid")
 
 
-## Minimum and maximum deaths for 5-19y
-minDeaths <- 15
-maxDeaths <- 5000
+## Minimum and maximum deaths
+if(ageSexSuffix %in% c("00to28d", "01to59m")){
+  minDeaths <- 20 # (after exclusion of unknown COD)
+  maxDeaths <- Inf
+}
+if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){
+  minDeaths <- 15
+  maxDeaths <- 5000
+}
+
 
