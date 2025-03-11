@@ -46,6 +46,7 @@ if(ageSexSuffix %in% c("00to28d")){
         . == "pneumonia" ~ "lri",
         TRUE ~ .)
     ) %>%
+    mutate(undt = NA) %>%
     pivot_longer(cols = any_of(c(v_cod_mapped)),
                  names_to = c("cod_mapped"), 
                  values_to = "cod_n"
