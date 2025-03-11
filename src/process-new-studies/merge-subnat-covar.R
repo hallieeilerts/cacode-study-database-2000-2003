@@ -23,14 +23,14 @@ dat_filename <- dat_filename[grepl("wide", dat_filename, ignore.case = TRUE)]
 dhsWide <- read.csv(paste0("./data/dhs/", dat_filename, sep = ""))
 ## Keys 
 # Study-covariate matched with DHS survey
-dat_filename <- list.files("./data/classification-keys")
+dat_filename <- list.files("./data/dhs")
 dat_filename <- dat_filename[grepl("studydhsregionmatching", dat_filename, ignore.case = TRUE)]
 dat_filename <- dat_filename[!grepl("manually-added", dat_filename, ignore.case = TRUE)]
-key_dhs_var <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
+key_dhs_var <- read.csv(paste0("./data/dhs/", dat_filename, sep = ""))
 # Studies matched with DHS survey (sometimes multiple) and survey-specific region
-dat_filename <- list.files("./data/classification-keys")
+dat_filename <- list.files("./data/dhs")
 dat_filename <- dat_filename[grepl("manually-added", dat_filename, ignore.case = TRUE)]
-key_dhs_reg <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
+key_dhs_reg <- read.csv(paste0("./data/dhs/", dat_filename, sep = ""))
 ################################################################################
 
 # We would like to first have any covariates reported alongside the CODs in the studies.

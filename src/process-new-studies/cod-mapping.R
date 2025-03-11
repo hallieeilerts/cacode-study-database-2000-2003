@@ -11,17 +11,17 @@ source("./src/set-inputs.R")
 ## Study CODs in long format
 dat <- read.csv(paste0("./gen/process-new-studies/temp/studies_long_", ageSexSuffix, ".csv", sep = ""))
 ## Key with mapped study CODs
-dat_filename <- list.files("./data/classification-keys")
+dat_filename <- list.files("./data/study-data")
 dat_filename <- dat_filename[grepl("studycausemapping", dat_filename, ignore.case = TRUE)]
 dat_filename <- tail(sort(dat_filename),1) # Most recent
-key <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
+key <- read.csv(paste0("./data/study-data/", dat_filename, sep = ""))
 ## Key with model classification for hmm/lmm countries
 dat_filename <- list.files("./data/classification-keys")
 dat_filename <- dat_filename[grepl("modelclass", dat_filename, ignore.case = TRUE)]
 key_modclass <- read.csv(paste0("./data/classification-keys/", dat_filename, sep = ""))
 ################################################################################
 
-# !!! NOTE: CHECK IF DAVID AND JAMIE WANT THIS APPLIED TO NEONATES AND POSTNEONATES
+# Discussed at objective 1 meeting in early March, we don't remove China and others for under-5
 if(ageSexSuffix %in% c("05to09y", "10to14y", "15to19yF", "15to19yM")){
   # Remove data points from COUNTRIES NOT VA
   v_keep <- subset(key_modclass, Group %in% c('HMM/LMM', 'HMM'))$ISO3
@@ -29,7 +29,7 @@ if(ageSexSuffix %in% c("05to09y", "10to14y", "15to19yF", "15to19yM")){
   nrow(dat)
 }
 
-length(grepl("adhoc", unique(dat$ref_id), ignore.case = TRUE)) # 63
+length(grepl("adhoc", unique(dat$ref_id), ignore.case = TRUE)) # 70
 
 # Subset data points applicable to age group being processed
 if(ageSexSuffix %in% "00to28d"){
@@ -78,6 +78,19 @@ if(nrow(subset(dat, age_lb_m > age_ub_m)) > 0 ){
 
 # Merge on cause mapping
 dat <- merge(dat, key, by.x = "cause_of_death", by.y = "cod_study", all.x = TRUE)
+
+# Note March 10, 2025
+# not sure why these aren't matching even though they are in the study cause mapped key
+# just doing a quick fix here
+# must be something with special character for space
+nrow(dat) # 1169 for 0-28d, 2769 for 1-59m
+problems <- subset(dat, is.na(cod_mapped) & article_id == "2022MDS_IND2014")
+problems$cod_mapped[grepl("asphyxia", problems$cause_of_death) & is.na(problems$cod_mapped)] <- "birth_asphyxia"
+problems$cod_mapped[grepl("newborn", problems$cause_of_death) & is.na(problems$cod_mapped)] <- "neonatal_cond"
+problems$cod_mapped[grepl("prematurity", problems$cause_of_death) & is.na(problems$cod_mapped)] <- "preterm"
+other <- subset(dat, !(is.na(cod_mapped) & article_id == "2022MDS_IND2014"))
+dat <- rbind(other, problems)
+nrow(dat) # 1169
 
 # Check that all causes are mapped
 if(nrow(subset(dat, is.na(cod_mapped))) > 0){
