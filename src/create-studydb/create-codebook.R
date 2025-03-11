@@ -27,11 +27,11 @@ dat_filename <- dat_filename[grepl("codebookbyvar", dat_filename, ignore.case = 
 pred_cb <- read.csv(paste0("./data/prediction-database/", dat_filename, sep = ""))
 ################################################################################
 
-dat <- data.frame(recnr = 1:length(names(dat)),
+dat <- data.frame(n = 1:length(names(dat)),
                   variable = names(dat))
 dat <- merge(dat, pred_cb[,c("variable","label","scale")], by = "variable", all.x = TRUE)
 names(dat)[which(names(dat) == "label")] <- "definition"
-dat <- dat[order(dat$recnr),]
+dat <- dat[order(dat$n),]
 
 dat$definition[dat$variable %in% key_cod$cod_reclass] <- "Cause of death"
 dat$scale[dat$variable %in% key_cod$cod_reclass] <- "integer"
@@ -124,7 +124,7 @@ dat$scale[dat$variable == "year_mid"] <- "integer"
 dat$definition[dat$variable == "totdeaths"] <- "Total deaths reported in the study data point. Does not included Undetermined."
 dat$scale[dat$variable == "totdeaths"] <- "integer"
 
-dat <- dat[,c("recnr","variable","scale","definition")]
+dat <- dat[,c("n","variable","scale","definition")]
 
 # Check if any definitions missing
 if(nrow(subset(dat, is.na(definition))) != 0){
