@@ -96,7 +96,6 @@ if(ageSexSuffix == "01to59m"){
 
 dat <- subset(dat, !(strata_id %in% v_exclude_strataid))
 
-
 # Save output -------------------------------------------------------------
 
 # Old model input that now has covariate names and scales as pred database
