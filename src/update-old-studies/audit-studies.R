@@ -19,7 +19,11 @@ dat_filename <- list.files("./gen/update-old-studies/audit")
 dat_filename <- dat_filename[grepl("dat_exc", dat_filename, ignore.case = TRUE)]
 dat_filename <- dat_filename[grepl(ageSexSuffix, dat_filename)] 
 dat_filename <- tail(sort(dat_filename),1) # Most recent
-dat_exc <- read.csv(paste0("./gen/update-old-studies/audit/", dat_filename, sep = ""))
+if(length(dat_filename) > 0){
+  dat_exc <- read.csv(paste0("./gen/update-old-studies/audit/", dat_filename, sep = ""))
+}else{
+  dat_exc <- data.frame()
+}
 ## Key with cod reclassification
 dat_filename <- list.files("./data/classification-keys")
 dat_filename <- dat_filename[grepl("codreclassification", dat_filename, ignore.case = TRUE)]
@@ -36,10 +40,15 @@ v_id <- c("recnr", "id", "ref_id", "article_id","totdeaths","exclude_reason")
 
 dat_incl$exclude_reason <- NA
 dat_incl <- dat_incl[c(v_id, v_cod_reclass)]
-dat_exc_abbrev <- dat_exc
-dat_exc_abbrev <- dat_exc_abbrev[c(v_id, v_cod_reclass )]
 
-all <- bind_rows(dat_incl, dat_exc_abbrev)
+if(nrow(dat_exc) > 0){
+  dat_exc_abbrev <- dat_exc
+  dat_exc_abbrev <- dat_exc_abbrev[c(v_id, v_cod_reclass )]
+  
+  all <- bind_rows(dat_incl, dat_exc_abbrev)
+}else{
+  all <- dat_incl
+}
 
 all$n_old <- nrow(studies)
 all$included <- ifelse(is.na(all$exclude_reason), 1, 0)
