@@ -232,7 +232,7 @@ if(ageSexSuffix %in% c("00to28d", "01to59m")){
   dat$id <- paste(dat$iso3, dat$year_mid, dat$strata_id, dat$location_fac,
                   round(dat$age_lb_m), round(dat$age_ub_m), substr(dat$sex,1,1), sep = '-')
   dat$id <- gsub("NA-NA", ageSexSuffix, dat$id) # If no age variables in ID, replace with ageSexSuffix
-  
+  dat$id <- gsub("NA", "0", dat$id) # Sometimes this is an NA for location_fac. replace.
 }
 
 # Check id is unique
