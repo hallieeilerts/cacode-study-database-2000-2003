@@ -56,7 +56,8 @@ datWide <- dat %>%
 #     filter(N > 1) %>%
 #     mutate(adhoc = grepl("adhoc",article_id,ignore.case = TRUE)) %>%
 #     filter(N > 1 & adhoc == FALSE) %>%
-#     arrange(iso3, totdeaths)
+#     arrange(iso3, totdeaths) %>%
+#     select(va_alg_N, everything())
 # View(df_batch3) # All of these duplicates should be multiple VA algorithms applied to same study data (va_alg_N should be 2)
 # If not, drop one record. 
 # Potential drop candidates include placebo/intervention strata, underlying/primary COD strata.
@@ -104,6 +105,7 @@ if(ageSexSuffix == "00to28d"){
   v_exclude_strataid <- c(v_exclude_strataid, "R202225431-01") #  R202225431-01 is a duplicate of R202211119-01
   v_exclude_strataid <- c(v_exclude_strataid, "R202225431-02") #  R202225431-02 is a duplicate of R202211119-02
   v_exclude_strataid <- c(v_exclude_strataid, "R202225180-02") #  R202225180-02 is primary cause, keeping underlying R202225180-05
+  # there are some adhoc2014 india data points that are not duplicates, though they show up here
   # batch4
   v_exclude_strataid <- c(v_exclude_strataid, "R202215420-01") #  R202215420-01 is intervention arm of a trial (R202215420-02 is control group)
   v_exclude_strataid <- c(v_exclude_strataid, "R202223172-01") #  R202223172-01 is intervention arm of a trial (R202223172-02 is control group)
