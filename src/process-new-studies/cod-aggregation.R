@@ -86,11 +86,13 @@ if(ageSexSuffix %in% c("15to19yF", "15to19yM")){
   # NOTE: This was to happen after the adjust-tot.R script
   # I don't think it'll make much of a difference to put it here though.
   # And much cleaner.
-  datWide$idtemp <- paste(datWide$iso3, datWide$year, datWide$ref_id, 
+  datWide$idtemp <- paste(datWide$iso3, datWide$year_mid, datWide$article_id, 
                           datWide$age_lb_m, datWide$age_ub_m, sep = '-')
   idLess <- unique(datWide$idtemp[which(datWide$totdeaths < minDeaths & datWide$sex != sexLabels[1])])
   dat_agg <- subset(datWide, idtemp %in% idLess)
   if(nrow(dat_agg) > 0){
+    datWide <- subset(datWide, !(idtemp %in% dat_agg$idtemp))
+    datWide$idtemp <- NULL
     dat_agg <- fn_aggCODbySex(dat_agg, key[,c("cod_reclass","cod_level2")])
     datWide <- rbind(datWide, dat_agg)
   }

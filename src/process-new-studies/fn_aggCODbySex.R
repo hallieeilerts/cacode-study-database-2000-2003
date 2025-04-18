@@ -16,14 +16,16 @@ fn_aggCODbySex <- function(DAT, KEY_COD_RECLASS){
   #' @return Data frame with aggregated data points where called for 
   
   # For testing function
-  #DAT <- subset(datWide, strata_id %in% c("adHoc2022HEALSL2023_SLE03", "adHoc2022HEALSL2023_SLE04"))
+  #DAT <- dat_agg
   #KEY_COD_RECLASS <- key[,c("cod_reclass","cod_level2")]
   
   # Rename COD reclassification columns
   names(KEY_COD_RECLASS) <- c("col1", "col2")
+  KEY_COD_RECLASS <- KEY_COD_RECLASS[!duplicated(KEY_COD_RECLASS),]
   
   # Create a temporary id that does not include sex
-  DAT$idtemp <- paste(DAT$ref_id, 
+  DAT$idtemp <- paste(DAT$article_id, 
+                      DAT$location_short,
                       DAT$iso3, 
                       DAT$year_mid, 
                       DAT$age_lb_m, DAT$age_ub_m, sep = '-')
@@ -97,7 +99,7 @@ fn_aggCODbySex <- function(DAT, KEY_COD_RECLASS){
     ### If one is missing and the other is reported, keep the non-missing
     # Recode the original cause as NA and re-categorize it as the appropriate "other" category
     df_onerep <- df_onerep %>%
-      filter(!is.na(value)) %>%
+      filter(!is.na(value)) %>% 
       left_join(., KEY_COD_RECLASS, by = c("agg" = "col1"))
     df_onerepA <- df_onerep %>% mutate(value = NA)
     df_onerepB <- df_onerep %>% mutate(agg = col2)
