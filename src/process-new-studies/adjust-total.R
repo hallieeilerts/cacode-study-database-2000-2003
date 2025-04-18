@@ -38,7 +38,7 @@ dat$totdeaths[totSmall] <- apply(dat[totSmall, paste0(v_cod_reclass)], 1, sum, n
 # Check that length is now zero
 totSmall <- which(dat$totdeaths - apply(dat[, paste0(v_cod_reclass)], 1, sum, na.rm = T) < -.01)
 if(length(totSmall) != 0){
-  warning("totdeaths too large")
+  warning("totdeaths too small")
 }
 
 # Adjust OTHER when total deaths are bigger than sum of COD
@@ -48,8 +48,9 @@ v_cod_other <- c("OtherCMPN", "OtherNCD", "OtherInj", "Other")
 # Subset to other categories present in data
 v_cod_other <- v_cod_other[v_cod_other %in% names(dat)]
 # Update OTHER
-if (length(totLarge) > 1) {
+if (length(totLarge) >= 1) {
   for (i in totLarge) {
+    
     # Difference in deaths
     diffDeath <- dat$totdeaths[i] - sum(dat[i, paste0(v_cod_reclass)], na.rm = T)
     # Proportion in "other" categories
