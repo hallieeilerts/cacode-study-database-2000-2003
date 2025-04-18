@@ -1382,7 +1382,10 @@ if (length(idExclude) > 0) dat <- dat[-idExclude, ]
 dim(dat)
 
 # Exclude UNDETERMINED from remaining data points
-dat <- dat[, !names(dat) %in% c('id2', 'Undetermined')]
+# HALLIE CHANGE ON 4/17/2025 to keep undetermined column in
+dat <- dat[, !names(dat) %in% c('id2')]
+#dat <- dat[, !names(dat) %in% c('id2', 'Undetermined')]
+
 if (!is.null(VRdata)) VRdata <- VRdata[, names(VRdata) != 'Undetermined']
 cod <- droplevels(cod[cod != 'Undetermined'])
 
@@ -1963,12 +1966,18 @@ if (SAVE) {
   
 }
 
+# cod including undetermined
+codwundt <- factor(c(as.character(cod), "Undetermined"))
+
+####### START HERE WITH KEEPING Undetermined as a column but not including it in misclassification matrix
+
+
 ############################################################
 ### DEATHS DATABASE                                      ###  
 ############################################################
 
 # Deaths from dat
-deaths <- dat[, c('id', 'sex', 'totdeaths', paste(cod))]
+deaths <- dat[, c('id', 'sex', 'totdeaths', paste(codwundt))]
 rm(dat)
 idVR <- NULL
 if (!is.null(VRdata)) {
