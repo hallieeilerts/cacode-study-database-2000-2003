@@ -76,6 +76,26 @@ if (length(idExclude) > 0) {
   dat <- dat[-idExclude, ]
 }
 
+# Exclude sex-specific
+if(ageSexSuffix == "15to19yF"){
+  idExclude <- which(dat$sex == sexLabels[3])
+  if (length(idExclude) > 0) {
+    dat_male <- dat[idExclude, ]
+    dat_male$exclude_reason <- "male"
+    dat_exc <- dplyr::bind_rows(dat_exc, dat_male)
+    dat <- dat[-idExclude, ]
+  }
+}
+if(ageSexSuffix == "15to19yM"){
+  idExclude <- which(dat$sex == sexLabels[2])
+  if (length(idExclude) > 0) {
+    dat_female <- dat[idExclude, ]
+    dat_female$exclude_reason <- "female"
+    dat_exc <- dplyr::bind_rows(dat_exc, dat_female)
+    dat <- dat[-idExclude, ]
+  }
+}
+
 # Fill in recnr that up to now was NAs
 # No more exclusions will take place (except between old and new studies)
 dat <- dat[order(dat$id),]
