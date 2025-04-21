@@ -33,22 +33,44 @@ v_cod_reclass <- v_cod_reclass[!(v_cod_reclass %in% "TB")]
 v_cod_noundt <- v_cod_reclass[!(v_cod_reclass %in% "Undetermined")]
 
 # plot distribution of causes of death
-p1 <- dat %>%
-  select(all_of(c("round", "strata_id", v_cod_reclass))) %>%
-  pivot_longer(
-    cols = v_cod_reclass,
-    names_to = "cod"
-  ) %>%
-  group_by(round, strata_id) %>%
-  mutate(total = sum(value, na.rm = T)) %>%
-  mutate(per = value/total) %>%
-  mutate(codabbrev = ifelse(cod == "Malnutrition", substr(cod, 1, 4), substr(cod, 1, 3))) %>%
-  filter(!is.na(per)) %>%
-  ggplot(aes(x= strata_id, y = per, fill = cod)) +
-  geom_bar(colour = "black", stat = "identity") +
-  geom_text(aes(label = codabbrev),size = 2, position = position_stack(vjust = 0.5)) +
-  coord_flip()
-ggsave(paste0("./gen/create-studydb/audit/cod-dist_",ageSexSuffix, "_",format(Sys.Date(), format="%Y%m%d"),".png"), p1, height = 100, limitsize = F)
+if(ageSexSuffix %in% c("00to28d","01to59m")){
+  p1 <- dat %>%
+    select(all_of(c("round", "strata_id", v_cod_reclass))) %>%
+    pivot_longer(
+      cols = v_cod_reclass,
+      names_to = "cod"
+    ) %>%
+    group_by(round, strata_id) %>%
+    mutate(total = sum(value, na.rm = T)) %>%
+    mutate(per = value/total) %>%
+    mutate(codabbrev = ifelse(cod == "Malnutrition", substr(cod, 1, 4), substr(cod, 1, 3))) %>%
+    filter(!is.na(per)) %>%
+    ggplot(aes(x= strata_id, y = per, fill = cod)) +
+    geom_bar(colour = "black", stat = "identity") +
+    geom_text(aes(label = codabbrev),size = 2, position = position_stack(vjust = 0.5)) +
+    coord_flip()
+  ggsave(paste0("./gen/create-studydb/audit/cod-dist_",ageSexSuffix, "_",format(Sys.Date(), format="%Y%m%d"),".png"), p1, 
+         height = 100, limitsize = F)
+}else{
+  p1 <- dat %>%
+    select(all_of(c("round", "strata_id", v_cod_reclass))) %>%
+    pivot_longer(
+      cols = v_cod_reclass,
+      names_to = "cod"
+    ) %>%
+    group_by(round, strata_id) %>%
+    mutate(total = sum(value, na.rm = T)) %>%
+    mutate(per = value/total) %>%
+    mutate(codabbrev = ifelse(cod == "Malnutrition", substr(cod, 1, 4), substr(cod, 1, 3))) %>%
+    filter(!is.na(per)) %>%
+    ggplot(aes(x= strata_id, y = per, fill = cod)) +
+    geom_bar(colour = "black", stat = "identity") +
+    geom_text(aes(label = codabbrev),size = 2, position = position_stack(vjust = 0.5)) +
+    coord_flip()
+  ggsave(paste0("./gen/create-studydb/audit/cod-dist_",ageSexSuffix, "_",format(Sys.Date(), format="%Y%m%d"),".png"), p1, 
+         height = 50, width = 7, limitsize = F)
+}
+
 
 # condensed plot
 p2 <- dat %>%
