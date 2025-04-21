@@ -100,10 +100,11 @@ if(df_covar %>%
 # First subsetting those with missing values and merging on DHS region key
 # If the iso3 from the DHS region key is missing, there was an error in manually assigned region
 df_covar %>%
-  filter(!is.na(region_name) & is.na(value)) %>%
+  filter(!is.na(region_name) & is.na(value)) %>% 
   select(survey_id, region_name) %>%
   unique() %>%
   left_join(dhsWide[,c("survey_id", "region_name","iso3")]) #%>% View
+
 # If the iso3 from the DHS region key is not NA it means the region did merge but the value was missing for that region
 # Check covariates that are missing
 df_covar %>%

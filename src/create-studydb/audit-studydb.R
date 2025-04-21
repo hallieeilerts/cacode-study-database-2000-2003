@@ -37,7 +37,6 @@ dat_filename <- dat_filename[grepl(ageSexSuffix, dat_filename)]
 auditBw <- read.csv(paste0("./gen/create-studydb/temp/", dat_filename, sep = ""))
 ################################################################################
 
-
 exctab <- auditNew %>%
   filter(excluded == 1) %>%
   group_by(exclude_reason) %>%
