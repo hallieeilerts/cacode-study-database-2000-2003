@@ -26,13 +26,13 @@ datWide <- dat %>%
 # Do not have two different VA algorithms.
 # Are not an ad-hoc data point. We compiled ad-hoc data and should not have any duplicates.
 # Identify duplicates to drop and add to v_exclude_strataid or v_exclude_article
-# df_batch1 <- datWide %>%
-#   group_by(iso3, year_start, year_end, sex, totdeaths) %>%
-#   mutate(N = n(),
-#          va_alg_N = n_distinct(va_alg)) %>%
-#   mutate(adhoc = grepl("adhoc",article_id,ignore.case = TRUE)) %>%
-#   filter(N > 1 & va_alg_N == 1 & adhoc == FALSE) %>%
-#   arrange(iso3, totdeaths)
+df_batch1 <- datWide %>%
+  group_by(iso3, year_start, year_end, sex, totdeaths) %>%
+  mutate(N = n(),
+         va_alg_N = n_distinct(va_alg)) %>%
+  mutate(adhoc = grepl("adhoc",article_id,ignore.case = TRUE)) %>%
+  filter(N > 1 & va_alg_N == 1 & adhoc == FALSE) %>%
+  arrange(iso3, totdeaths)
 # View(df_batch1)
 # df_batch2 <- datWide %>%
 #   filter(!(strata_id %in% v_exclude_strataid)) %>%
@@ -129,7 +129,7 @@ if(ageSexSuffix == "01to59m"){
   # For looking at duplicates in batch 3
   # View(subset(df_batch3, strata_id %in% c("R202210800-01")))
   # batch4
-  v_exclude_strataid <- c(v_exclude_strataid, "R202210800-01") # Azithromycin intervention arm of a trial
+  v_exclude_strataid <- c(v_exclude_strataid, "R202210800-02") # Azithromycin intervention arm of a trial. Placebo is R202210800-01
   v_exclude_strataid <- c(v_exclude_strataid, "R202219200-01", "R202220750-01", "R202220750-02") # RotaSIIL intervention arm of a trial, and duplicated. Dropping duplicate control record as well
   v_exclude_strataid <- c(v_exclude_strataid, "R2022346-02") # Facility record strata
   # Exclude entire article
@@ -163,9 +163,8 @@ if(ageSexSuffix == "10to14y"){
   v_exclude_article <- c()
 }
 if(ageSexSuffix == "15to19yF"){
-  # !!!! CHANGE TO STRATA ID
-  v_exclude_strataid <- c("PNG-2011-132-R2022132-01-144-228-T") # Pure duplicate
-  v_exclude_strataid <- c(v_exclude_strataid, "PNG-2019-10731-R202210731-03-180-288-T") # One has CODs aggregated in "Other" category. One has them disaggregated.
+  v_exclude_strataid <- c("R2022132-01") # Pure duplicate of R202224933-01
+  v_exclude_strataid <- c(v_exclude_strataid, "R202210731-03") # Duplicate of "R2022229-03" and has CODs aggregated in "Other" category.
   # Exclude entire article
   v_exclude_article <- c()
 }
