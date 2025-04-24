@@ -50,6 +50,7 @@ datLong <- datLong %>%
   select(-c(cause_number, cod_p, cod_mr, cod_mro))%>%
   mutate(cod_n = as.numeric(cod_n))
 
+
 # Save output -------------------------------------------------------------
 
 write.csv(datLong, paste0("./gen/process-new-studies/temp/studies_long_",ageSexSuffix,".csv",sep =""), row.names = FALSE)

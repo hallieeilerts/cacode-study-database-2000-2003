@@ -80,17 +80,17 @@ if(nrow(subset(dat, age_lb_m > age_ub_m)) > 0 ){
 dat <- merge(dat, key, by.x = "cause_of_death", by.y = "cod_study", all.x = TRUE)
 
 # Note March 10, 2025
-# not sure why these aren't matching even though they are in the study cause mapped key
+# not sure why these cod aren't matching even though they are in the study cause mapped key
 # just doing a quick fix here
 # must be something with special character for space
-nrow(dat) # 1169 for 0-28d, 2769 for 1-59m
+nrow(dat) # 1271 for 0-28d, 2769 for 1-59m
 problems <- subset(dat, is.na(cod_mapped) & article_id == "2022MDS_IND2014")
 problems$cod_mapped[grepl("asphyxia", problems$cause_of_death) & is.na(problems$cod_mapped)] <- "birth_asphyxia"
 problems$cod_mapped[grepl("newborn", problems$cause_of_death) & is.na(problems$cod_mapped)] <- "neonatal_cond"
 problems$cod_mapped[grepl("prematurity", problems$cause_of_death) & is.na(problems$cod_mapped)] <- "preterm"
 other <- subset(dat, !(is.na(cod_mapped) & article_id == "2022MDS_IND2014"))
 dat <- rbind(other, problems)
-nrow(dat) # 1169
+nrow(dat) # 1271
 
 # Check that all causes are mapped
 if(nrow(subset(dat, is.na(cod_mapped))) > 0){
