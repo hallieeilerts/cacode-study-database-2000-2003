@@ -30,12 +30,14 @@ source("./src/process-new-studies/cod-aggregation.R", local = new.env())
 if(ageSexSuffix %in% c("05to09y", "10to14y")){source("./src/process-new-studies/redistribute-tb.R", local = new.env())}
 source("./src/process-new-studies/adjust-total.R", local = new.env())
 source("./src/process-new-studies/manage-other.R", local = new.env())
-source("./src/process-new-studies/exclude-by-size.R", local = new.env()) # 
+source("./src/process-new-studies/exclusion-criteria.R", local = new.env()) 
 source("./src/process-new-studies/reclassify-cod.R", local = new.env())
 source("./src/process-new-studies/merge-subnat-covar.R", local=new.env())
 source("./src/process-new-studies/merge-new-study-pfpr.R", local=new.env())
 source("./src/process-new-studies/merge-nat-covar.R", local=new.env())
 source("./src/process-new-studies/audit-studies.R", local = new.env()) 
+
+#source("./src/process-new-studies/multiple-va-qc.R", local = new.env()) 
 
 # Recover 2000-2019 study databases for 5-19y age groups ------------------
 
@@ -65,6 +67,9 @@ if(ageSexSuffix %in% c("00to28d", "01to59m")){
 source("./src/update-old-studies/set-idvars.R", local=new.env())
 if(ageSexSuffix %in% c("00to28d", "01to59m")){
   source("./src/update-old-studies/drop-duplicates-under5.R", local=new.env())
+  source("./src/update-old-studies/cod-aggregation.R", local=new.env())
+  source("./src/update-old-studies/exclusion-criteria.R", local=new.env())
+  source("./src/update-old-studies/audit-studies.R", local=new.env())
 }
 source("./src/update-old-studies/harmonize-cod.R", local=new.env())
 source("./src/update-old-studies/update-covar-names-scales.R", local=new.env())
@@ -77,7 +82,7 @@ if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){
   source("./src/update-old-studies/update-modinput-deaths.R", local=new.env())
 }
 
-# ad-hoc file for requesting subnational pfpr for 2000-2019 5-19y studies from MAP
+# ad-hoc file used for requesting subnational pfpr for 2000-2019 5-19y studies from MAP
 #source("./src/update-old-studies/agecombined-5to19-studydb.R", local=new.env())
 
 # Create new study database -----------------------------------------------
@@ -86,14 +91,22 @@ if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){
 source("./src/create-studydb/combine-studydb.R")
 source("./src/create-studydb/drop-duplicates-bw-sysrev.R")
 source("./src/create-studydb/quality-check-and-save.R")
+source("./src/create-studydb/audit-studydb.R", local = new.env()) 
 if(ageSexSuffix %in% c("01to59m")){
   source("./src/create-studydb/drop-malnutrition.R", local=new.env())
 }
 if(ageSexSuffix %in% c("00to28d","01to59m")){
   source("./src/create-studydb/merge-calibrated-cod.R", local=new.env())
 }
+source("./src/create-studydb/viz-cod-dist.R", local = new.env()) 
 if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){ 
   source("./src/create-studydb/combine-modinput-deaths.R")
   source("./src/create-studydb/create-modinput-studies.R")
 }
 source("./src/create-studydb/create-codebook.R")
+
+
+# NOTES
+# Make sure to inform Jamie and David that there are some data points that appear multiple times with different VA algorithms
+# Undetermined is not in the totdeaths
+# sid has changed to recnr. Need to take this into account in model estimation function. done to distinguish between all the ids.
