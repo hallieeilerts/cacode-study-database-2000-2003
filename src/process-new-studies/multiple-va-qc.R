@@ -1,8 +1,18 @@
 #################################################################################
 # Investigating data points with multiple VA algoritms
 
-# go to add-multiple-va-id
+# add-multiple-va-id.R
+# get list of studies with multiple VA ids
 unique(subset(dat, va_mult_ind == 1)$strata_id)
+
+# this indicator is created using totdeaths
+# all have the same total deaths in the beginning
+dat %>%
+  filter(strata_id %in% v_multva) %>%
+  arrange(strata_id) %>%
+  View()
+# differences in total deaths only arise after processing
+# starts in cod-aggregation
 
 # 0-1m
 v_multva <- c("R202210645-03","R202210645-04","R202222679-01","R202222679-02","R202214959-01","R202214959-02","2022COMSAMOZ01",
