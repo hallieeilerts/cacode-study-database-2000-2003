@@ -8,8 +8,13 @@ rm(list = ls())
 require(tidyverse)
 #' Inputs
 source("./src/set-inputs.R")
-## Study data with too small and too large data points excluded
-studies <- read.csv(paste0("./gen/process-new-studies/temp/studies_exc_", ageSexSuffix, ".csv", sep = ""))
+if(ageSexSuffix %in% "00to28d"){
+  ## Study data with too small and too large data points excluded, premvslbw merged on
+  studies <- read.csv(paste0("./gen/process-new-studies/temp/studies_premvslbw_", ageSexSuffix, ".csv", sep = ""))
+}else{
+  ## Study data with too small and too large data points excluded
+  studies <- read.csv(paste0("./gen/process-new-studies/temp/studies_exc_", ageSexSuffix, ".csv", sep = ""))
+}
 ## Long form data with identifying columns for studies and DHS subnational covar, study-level pfpr merged where possible
 studycovar <- read.csv(paste0("./gen/process-new-studies/temp/studycovar_subnat-pfpr_", ageSexSuffix, ".csv", sep = ""))
 ## Prediction Database

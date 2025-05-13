@@ -33,11 +33,18 @@ dat <- merge(dat, pred_cb[,c("variable","label","scale")], by = "variable", all.
 names(dat)[which(names(dat) == "label")] <- "definition"
 dat <- dat[order(dat$n),]
 
+# CODs and covariates
 dat$definition[dat$variable %in% key_cod$cod_reclass] <- "Cause of death"
 dat$scale[dat$variable %in% key_cod$cod_reclass] <- "integer"
 dat$definition[grepl("source", dat$variable)] <- "Source of covariate"
 dat$scale[grepl("source", dat$variable)] <- "free_text"
 dat$definition[dat$variable %in% "Undetermined"] <- "Undetermined cause of death. Not counted in total (totdeaths)."
+
+# Covariate derived from data (not prediction database)
+if("premvslbw" %in% dat$variable){
+  dat$scale[dat$variable == "premvslbw"] <- "zero_one"
+  dat$definition[dat$variable == "premvslbw"] <- "Study distinguishes between preterm and low birth weight as COD (1 = yes, 0 = no)"
+}
 
 # Manually define id variables
 dat$definition[dat$variable == "round"] <- "Denotes whether the data point is from the study database originally used to produce the 2000-2019 estimates or the recently conducted 2000-2023 systematic review."

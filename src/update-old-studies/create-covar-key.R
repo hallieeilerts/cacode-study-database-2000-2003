@@ -42,7 +42,7 @@ scovar01to59m <- dat01to59m %>% select(ends_with("_source")) %>%
   rename_with(function(c) str_replace(c, "_source", "")) %>%
   names()
 scovar00to28d <- dat00to28d %>% 
-  select(c(u5mr, nmr, dpt, gfr, lbwrate, sba, bcg, pab, femlit)) %>%
+  select(c(u5mr, nmr, dpt, gfr, lbwrate, sba, bcg, pab, femlit, premvslbw)) %>%
   names()
 
 scovar <- c(scovar05to19y, scovar01to59m, scovar00to28d)
@@ -75,7 +75,7 @@ key$study[key$pred == "mr15to19_mf"] <-  "MR15_19"
 key$predFillIn <- key$pred
 subset(key, is.na(pred))$study
 subset(key, is.na(study))$pred
-# Assign name of study covariates that are present in pred
+# Assign name of study covariates that are NA in pred, but they are actually there under a different name
 # Didn't match up because name has changed
 key$predFillIn[key$study == "_5q0"] <- "u5mr"
 key$predFillIn[key$study == "alcohol"] <- "alcohol_mf"
@@ -120,6 +120,7 @@ key$predFillIn[key$study == "pcv3"] <- "vac_pcv3"
 #key$predFillIn[key$study == "pop_over15_f"] <- 
 #key$predFillIn[key$study == "pop_over15_m"] <- 
 #key$predFillIn[key$study == "pop_over15_mf"] <- 
+#key$predFillIn[key$study == "premvslbw"] <- 
 key$predFillIn[key$study == "rota_last_mf" ] <- "vac_rota_last" 
 key$predFillIn[key$study == "sanitation" ] <- "wash_sanitation_improved"
 key$predFillIn[key$study == "sba" ] <- "sab"
@@ -231,7 +232,9 @@ key <- key[order(key$all),]
 
 # Save output -------------------------------------------------------------
 
-warning("Covariate key saving turned off on February 24, 2025. Turn back on saving function if update made to covariates.")
+warning("Covariate key saving turned off on May 13, 2025. Turn back on saving function if update made to covariates.")
+# April 30th update: adding mr05to09, mr05to14
+# May 13th update: adding premvslbw
 #write.csv(key, paste0("./gen/update-old-studies/output/CovariateKey_Study2019Pred2023_",format(Sys.Date(), format="%Y%m%d"),".csv", sep = ""), row.names = FALSE)
 
 

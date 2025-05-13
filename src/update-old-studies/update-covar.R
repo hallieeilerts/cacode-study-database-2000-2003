@@ -120,5 +120,10 @@ studyupdWide <- studyupdWide[order(studyupdWide$recnr),]
 
 # Save outputs ------------------------------------------------------------
 
-write.csv(studyupdWide, paste0("./gen/update-old-studies/output/Studies2019-UpdatedCovar_",ageSexSuffix,".csv"), row.names = FALSE)
+if(ageSexSuffix == "00to28d"){
+  write.csv(studyupdWide, paste0("./gen/update-old-studies/output/studies-wide_upd-covar_",ageSexSuffix,".csv"), row.names = FALSE)
+}else{
+  write.csv(studyupdWide, paste0("./gen/update-old-studies/output/Studies2019-UpdatedCovar_",ageSexSuffix,".csv"), row.names = FALSE)
+}
+
 

@@ -23,6 +23,9 @@ source("./src/combine-studies-adhoc/set-idvars.R", local = new.env())
 # Clean new data points ---------------------------------------------------
 
 source("./src/process-new-studies/reshape-cod-long.R", local = new.env())
+if(ageSexSuffix == "00to28d"){
+  source("./src/process-new-studies/extract-preterm-vs-lbw.R", local = new.env())
+}
 source("./src/process-new-studies/cod-mapping.R", local = new.env())
 source("./src/process-new-studies/drop-duplicates.R", local = new.env())
 source("./src/process-new-studies/add-multiple-va-id.R", local = new.env())
@@ -34,6 +37,9 @@ source("./src/process-new-studies/exclusion-criteria.R", local = new.env())
 source("./src/process-new-studies/reclassify-cod.R", local = new.env())
 source("./src/process-new-studies/merge-subnat-covar.R", local=new.env())
 source("./src/process-new-studies/merge-new-study-pfpr.R", local=new.env())
+if(ageSexSuffix == "00to28d"){
+  source("./src/process-new-studies/merge-preterm-vs-lbw.R", local = new.env())
+}
 source("./src/process-new-studies/merge-nat-covar.R", local=new.env())
 source("./src/process-new-studies/audit-studies.R", local = new.env()) 
 
@@ -78,6 +84,9 @@ if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){
 }
 source("./src/update-old-studies/create-covar-replacement-key.R", local=new.env())
 source("./src/update-old-studies/update-covar.R", local=new.env())
+if(ageSexSuffix == "00to28d"){
+  source("./src/update-old-studies/merge-preterm-vs-lbw.R", local = new.env())
+}
 if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){ 
   source("./src/update-old-studies/update-modinput-deaths.R", local=new.env())
 }
@@ -98,10 +107,10 @@ if(ageSexSuffix %in% c("01to59m")){
 if(ageSexSuffix %in% c("00to28d","01to59m")){
   source("./src/create-studydb/merge-calibrated-cod.R", local=new.env())
 }
-source("./src/create-studydb/viz-cod-dist.R", local = new.env()) 
+#source("./src/create-studydb/viz-cod-dist.R", local = new.env()) 
 if(ageSexSuffix %in% c("05to09y", "10to14y","15to19yF","15to19yM")){ 
   source("./src/create-studydb/combine-modinput-deaths.R")
-  source("./src/create-studydb/create-modinput-studies.R")
+  source("./src/create-studydb/create-modinput-studies.R") ## NEED TO UPDATE DF_COVAR
 }
 source("./src/create-studydb/create-codebook.R")
 

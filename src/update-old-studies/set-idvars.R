@@ -48,10 +48,17 @@ if(ageSexSuffix %in% c("00to28d")){
            iso3 = isocode,
            countryname = country,
            year_mid = year,
-    ) %>%
-    select(-c(sid, natrep, studyid_1, period, per_early, per_late, regSSA, regSA, premvslbw, first, last, N)) 
-  # remove any column that is not in idVars, totdeaths, a COD, a covariate, a covariate source
+    ) 
+
+  # save separately
+  dat_premvslbw <- dat %>%
+    select(strata_id, premvslbw) %>%
+    distinct()
   
+  # remove any column that is not in idVars, totdeaths, a COD, a covariate, a covariate source
+  dat <- dat %>%
+    select(-c(sid, natrep, studyid_1, period, per_early, per_late, premvslbw, regSSA, regSA, first, last, N)) 
+
   # study location
   dat$location_char <- dat$location_long
   dat$location_short <- dat$location_char
@@ -272,4 +279,6 @@ dat <- dat[order(dat$id),]
 
 # Old model input that now has covariate names and scales as pred database
 write.csv(dat, paste0("./gen/update-old-studies/temp/studies_set-id_", ageSexSuffix, ".csv"), row.names = FALSE)
-
+if(ageSexSuffix == "00to28d"){
+  write.csv(dat_premvslbw, paste0("./gen/update-old-studies/temp/dat_premvslbw_",ageSexSuffix,".csv",sep =""), row.names = FALSE)
+}
