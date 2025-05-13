@@ -76,7 +76,7 @@ if (length(idExclude) > 0) {
 }
 
 # Tidy
-dat <- dat[, c(idVars, "totdeaths", v_cod_reclass)]
+dat <- dat[,c(idVars, "totdeaths", v_cod_reclass)]
 rownames(dat) <- NULL
 
 # Save output -------------------------------------------------------------

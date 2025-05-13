@@ -43,5 +43,5 @@ deaths <- deaths %>%
 
 # Save output(s) ----------------------------------------------------------
 
-save(deaths, file = paste("./gen/create-studydb/output/ModInput2023-Deaths_",ageSexSuffix,"_",resDate,".RData", sep = ""))
+save(deaths, file = paste("./gen/create-studydb/output/ModInput2023-HMM-Deaths_",ageSexSuffix,"_",resDate,".RData", sep = ""))
 
